@@ -48,8 +48,7 @@ class Visualization3RS extends RenderScriptScene {
 
     static class WorldState {
         public float yRotation;
-        public float mCenterX;
-        public float mCenterY;
+        public int idle;
     }
     WorldState mWorldState = new WorldState();
     private Type mStateType;
@@ -61,7 +60,7 @@ class Visualization3RS extends RenderScriptScene {
     private float [] mPointData = new float[512*4];
 
     private Allocation mLineIdxAlloc;
-    private int [] mIndexData = new int[512]; // we'll pack 2 indices per int
+    private short [] mIndexData = new short[512 * 2];
 
     private ProgramVertex mPVBackground;
     private ProgramVertex.MatrixAllocation mPVAlloc;
@@ -79,13 +78,18 @@ class Visualization3RS extends RenderScriptScene {
         super(width, height);
         mWidth = width;
         mHeight = height;
+        // the x-coordinates don't change, so set those now
+        int outlen = mPointData.length / 4;
+        int half = outlen / 2;
+        for(int i = 0; i < outlen; i++) {
+            mPointData[i*4]   = i - half;
+            mPointData[i*4+2]   = i - half;
+        }
     }
 
     @Override
     public void resize(int width, int height) {
         super.resize(width, height);
-        mWorldState.mCenterX = mWidth / 2;
-        mWorldState.mCenterY = mHeight / 2;
         if (mPVAlloc != null) {
             Log.i("@@@@@", "resized to " + mWidth + "x" + mHeight);
             mPVAlloc.setupProjectionNormalized(mWidth, mHeight);
@@ -132,7 +136,7 @@ class Visualization3RS extends RenderScriptScene {
         final Element vertexElement = elementBuilder.create();
         final int vertexSlot = meshBuilder.addVertexType(vertexElement, mPointData.length / 2);
         // Specify the type and number of indices we need. We'll allocate them later.
-        meshBuilder.setIndexType(Element.INDEX_16(mRS), mIndexData.length * 2);
+        meshBuilder.setIndexType(Element.INDEX_16(mRS), mIndexData.length);
         // This will be a line mesh
         meshBuilder.setPrimitive(Primitive.LINE);
 
@@ -154,7 +158,7 @@ class Visualization3RS extends RenderScriptScene {
          */
         updateWave();
         for(int i = 0; i < mIndexData.length; i ++) {
-            mIndexData[i] = (i*2) | ((i*2+1) << 16);
+            mIndexData[i] = (short) i;
         }
 
         /*
@@ -215,11 +219,18 @@ class Visualization3RS extends RenderScriptScene {
         }
 
         int len = MediaPlayer.snoop(mVizData, 1);
+        int outlen = mPointData.length / 4;
+        int half = outlen / 2;
         if (len == 0) {
-            // there was no new data, so make the visualization go away
-            for (int i = 0; i < mVizData.length; i++) {
-                mVizData[i] = 0;
+            if (mWorldState.idle == 0) {
+                mWorldState.idle = 1;
+                mState.data(mWorldState);
             }
+            return;
+        }   
+        if (mWorldState.idle != 0) {
+            mWorldState.idle = 0;
+            mState.data(mWorldState);
         }
 
         // we always get 256 points
@@ -235,8 +246,6 @@ class Visualization3RS extends RenderScriptScene {
             mAnalyzer[i * 2] = mAnalyzer[i * 2 + 1] = newval;
         }
 
-        int outlen = mPointData.length / 4;
-        int half = outlen / 2;
         for(int i = 0; i < outlen; i++) {
             mPointData[i*4]   = i - half;
             mPointData[i*4+1] = mAnalyzer[i] / 100;
