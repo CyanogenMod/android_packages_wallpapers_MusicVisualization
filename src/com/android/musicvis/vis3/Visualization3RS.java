@@ -209,7 +209,8 @@ class Visualization3RS extends RenderScriptScene {
     @Override
     public void stop() {
         super.stop();
-        mVisible = true;
+        mVisible = false;
+        updateWave();
     }
 
     void updateWave() {
