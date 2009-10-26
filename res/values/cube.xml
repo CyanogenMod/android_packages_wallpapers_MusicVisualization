@@ -23,6 +23,7 @@
     <string name="wallpaper_vis1">Visualizer</string>
     <string name="wallpaper_vis2">Waveform</string>
     <string name="wallpaper_vis3">Spectrum</string>
+    <string name="wallpaper_vis4">VU meter</string>
 
     <!-- x,y,z tuples for the points defining the object -->
     <!-- stored as strings for easier human readability -->

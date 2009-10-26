@@ -57,6 +57,16 @@
             <meta-data android:name="android.service.wallpaper" android:resource="@xml/vis3" />
         </service>
 
+        <service
+            android:label="@string/wallpaper_vis4"
+            android:name=".vis4.Visualization4"
+            android:permission="android.permission.BIND_WALLPAPER">
+            <intent-filter>
+                <action android:name="android.service.wallpaper.WallpaperService" />
+            </intent-filter>
+            <meta-data android:name="android.service.wallpaper" android:resource="@xml/vis4" />
+        </service>
+
     </application>
 
 </manifest>
