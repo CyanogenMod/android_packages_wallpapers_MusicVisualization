@@ -199,7 +199,7 @@ class Visualization4RS extends RenderScriptScene {
     @Override
     public void stop() {
         super.stop();
-        mVisible = true;
+        mVisible = false;
     }
 
     void updateWave() {
