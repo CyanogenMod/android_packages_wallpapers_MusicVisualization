@@ -261,7 +261,7 @@ class Visualization4RS extends RenderScriptScene {
             mWorldState.mPeak--;
         }
 
-        mWorldState.mAngle = 131 - mNeedlePos / 410; // ~80 degree range
+        mWorldState.mAngle = 131f - (mNeedlePos / 410f); // ~80 degree range
         mState.data(mWorldState);
     }
 
