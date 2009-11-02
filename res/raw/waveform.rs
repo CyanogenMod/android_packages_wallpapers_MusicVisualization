@@ -19,9 +19,12 @@
 
 #define RSID_POINTS 1
 
-#define FADE_LENGTH 100
+#define FADEOUT_LENGTH 100
+#define FADEOUT_FACTOR 0.95f
+#define FADEIN_LENGTH 15
 
-int fadecounter;
+int fadeoutcounter = 0;
+int fadeincounter = 0;
 int wave1pos = 0;
 int wave1amp = 0;
 int wave2pos = 0;
@@ -30,13 +33,34 @@ int wave3pos = 0;
 int wave3amp= 0;
 int wave4pos = 0;
 int wave4amp= 0;
+float idle[4096];
+int waveCounter = 0;
 
-void dumpState() {
-
-//    debugF("@@@@@ yrot: ", State->yRotation);
-
+void makeIdleWave(float *points) {
+    int i;
+    // show a number of superimposed moving sinewaves
+    float amp1 = sinf(0.007 * wave1amp) * 120;
+    float amp2 = sinf(0.023 * wave2amp) * 80;
+    float amp3 = sinf(0.011 * wave3amp) * 40;
+    float amp4 = sinf(0.031 * wave4amp) * 20;
+    for (i = 0; i < 512; i++) {
+        float val = sinf(0.013 * (wave1pos + i)) * amp1
+                  + sinf(0.029 * (wave2pos + i)) * amp2;
+        float off = sinf(0.005 * (wave3pos + i)) * amp3
+                  + sinf(0.017 * (wave4pos + i)) * amp4;
+        if (val < 2.f && val > -2.f) val = 2.f;
+        points[i*8+1] = val + off;
+        points[i*8+5] = -val + off;
+    }
+    wave1pos++;
+    wave1amp++;
+    wave2pos--;
+    wave2amp++;
+    wave3pos++;
+    wave3amp++;
+    wave4pos++;
+    wave4amp++;
 }
-
 
 int main(int launchID) {
 
@@ -46,48 +70,47 @@ int main(int launchID) {
 
         // idle state animation
         float *points = loadArrayF(RSID_POINTS, 0);
-        if (fadecounter > 0) {
+        if (fadeoutcounter > 0) {
             // fade waveform to 0
             for (i = 0; i < 512; i++) {
                 float val = absf(points[i*8+1]);
-                val = val * fadecounter / FADE_LENGTH;
+                val = val * FADEOUT_FACTOR;
                 if (val < 2.f) val = 2.f;
                 points[i*8+1] = val;
                 points[i*8+5] = -val;
             }
-            fadecounter--;
-            if (fadecounter == 0) {
+            fadeoutcounter--;
+            if (fadeoutcounter == 0) {
                 wave1amp = 0;
                 wave2amp = 0;
                 wave3amp = 0;
                 wave4amp = 0;
             }
         } else {
-            // show a number of superimposed moving sinewaves
-            float amp1 = sinf(0.007 * wave1amp) * 120;
-            float amp2 = sinf(0.023 * wave2amp) * 80;
-            float amp3 = sinf(0.011 * wave3amp) * 40;
-            float amp4 = sinf(0.031 * wave4amp) * 20;
-            for (i = 0; i < 512; i++) {
-                float val = sinf(0.013 * (wave1pos + i)) * amp1
-                          + sinf(0.029 * (wave2pos + i)) * amp2;
-                float off = sinf(0.005 * (wave3pos + i)) * amp3
-                          + sinf(0.017 * (wave4pos + i)) * amp4;
-                if (val < 2.f && val > -2.f) val = 2.f;
-                points[i*8+1] = val + off;
-                points[i*8+5] = -val + off;
-            }
-            wave1pos++;
-            wave1amp++;
-            wave2pos--;
-            wave2amp++;
-            wave3pos++;
-            wave3amp++;
-            wave4pos++;
-            wave4amp++;
+            // idle animation
+            makeIdleWave(points);
         }
+        fadeincounter = FADEIN_LENGTH;
     } else {
-        fadecounter = FADE_LENGTH;
+        if (fadeincounter > 0 && fadeoutcounter == 0) {
+            // morph from idle animation back to waveform
+            makeIdleWave(idle);
+            if (waveCounter != State->waveCounter) {
+                waveCounter = State->waveCounter;
+                float *points = loadArrayF(RSID_POINTS, 0);
+                for (i = 0; i < 512; i++) {
+                    float val = absf(points[i*8+1]);
+                    points[i*8+1] = (val * (FADEIN_LENGTH - fadeincounter) + idle[i*8+1] * fadeincounter) / FADEIN_LENGTH;
+                    points[i*8+5] = (-val * (FADEIN_LENGTH - fadeincounter) + idle[i*8+5] * fadeincounter) / FADEIN_LENGTH;
+                }
+            }
+            fadeincounter--;
+            if (fadeincounter == 0) {
+                fadeoutcounter = FADEOUT_LENGTH;
+            }
+        } else {
+            fadeoutcounter = FADEOUT_LENGTH;
+        }
     }
 
     float mat1[16];

@@ -21,13 +21,9 @@ import static android.renderscript.ProgramFragment.EnvMode.REPLACE;
 import static android.renderscript.Sampler.Value.LINEAR;
 import static android.renderscript.Sampler.Value.WRAP;
 
-import com.android.musicvis.R;
-import com.android.musicvis.RenderScriptScene;
-
-import android.graphics.Canvas;
-import android.graphics.Rect;
 import android.media.MediaPlayer;
 import android.os.Handler;
+import android.os.SystemClock;
 import android.renderscript.Allocation;
 import android.renderscript.Element;
 import android.renderscript.Primitive;
@@ -38,8 +34,6 @@ import android.renderscript.ScriptC;
 import android.renderscript.SimpleMesh;
 import android.renderscript.Type;
 import android.renderscript.Element.Builder;
-import android.util.Log;
-import android.view.SurfaceHolder;
 
 import java.util.TimeZone;
 
@@ -57,6 +51,7 @@ public class GenericWaveRS extends RenderScriptScene {
     protected static class WorldState {
         public float yRotation;
         public int idle;
+        public int waveCounter;
     }
     protected WorldState mWorldState = new WorldState();
     private Type mStateType;
@@ -246,6 +241,9 @@ public class GenericWaveRS extends RenderScriptScene {
     public void start() {
         super.start();
         mVisible = true;
+        // Preroll the MediaPlayer so we don't get a spurious 'idle'
+        MediaPlayer.snoop(mVizData, 0);
+        SystemClock.sleep(200);
         updateWave();
     }
 
@@ -265,6 +263,8 @@ public class GenericWaveRS extends RenderScriptScene {
             mHandler.postDelayed(mDrawCube, 20);
         }
         update();
+        mWorldState.waveCounter++;
+        mState.data(mWorldState);
     }
 
 }
