@@ -20,6 +20,7 @@ package com.android.musicvis;
 import android.content.res.Resources;
 import android.renderscript.RenderScript;
 import android.renderscript.ScriptC;
+import android.view.MotionEvent;
 
 public abstract class RenderScriptScene {
     protected int mWidth;
@@ -83,4 +84,7 @@ public abstract class RenderScriptScene {
     @SuppressWarnings({"UnusedDeclaration"})
     public void setOffset(float xOffset, float yOffset, int xPixels, int yPixels) {
     }
+    public void onTouchEvent(MotionEvent event) {
+    }
+
 }
