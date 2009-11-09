@@ -119,7 +119,7 @@ public class GenericWaveRS extends RenderScriptScene {
         // Create an allocation from the type we just created.
         mState = Allocation.createTyped(mRS, mStateType);
         // set our java object as the data for the renderscript allocation
-        mWorldState.yRotation = (-0.5f) * 2 * 180 / (float) Math.PI;
+        mWorldState.yRotation = 0.0f;
         mState.data(mWorldState);
 
         /*
@@ -231,9 +231,13 @@ public class GenericWaveRS extends RenderScriptScene {
     }
 
     @Override
-    public void setOffset(float xOffset, float yOffset, int xPixels, int yPixels) {
+    public void setOffset(float xOffset, float yOffset,
+            float xStep, float yStep, int xPixels, int yPixels) {
         // update our state, then push it to the renderscript
-        mWorldState.yRotation = (xOffset - 0.5f) * 360; // rotate -180 to +180
+        if (xStep == 0.0f) {
+            xStep = 1.0f;
+        }
+        mWorldState.yRotation = (xOffset / xStep) * 180; // rotate 180 degrees per screen
         mState.data(mWorldState);
     }
 

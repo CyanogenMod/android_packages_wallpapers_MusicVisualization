@@ -147,7 +147,8 @@ class Visualization5RS extends RenderScriptScene {
     }
     
     @Override
-    public void setOffset(float xOffset, float yOffset, int xPixels, int yPixels) {
+    public void setOffset(float xOffset, float yOffset,
+            float xStep, float yStep, int xPixels, int yPixels) {
         // update our state, then push it to the renderscript
         mWorldState.mRotate = (xOffset - 0.5f) * 90;
         mState.data(mWorldState);

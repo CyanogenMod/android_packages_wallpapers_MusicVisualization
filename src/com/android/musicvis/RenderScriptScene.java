@@ -82,7 +82,8 @@ public abstract class RenderScriptScene {
     }
 
     @SuppressWarnings({"UnusedDeclaration"})
-    public void setOffset(float xOffset, float yOffset, int xPixels, int yPixels) {
+    public void setOffset(float xOffset, float yOffset,
+            float xStep, float yStep, int xPixels, int yPixels) {
     }
     public void onTouchEvent(MotionEvent event) {
     }
