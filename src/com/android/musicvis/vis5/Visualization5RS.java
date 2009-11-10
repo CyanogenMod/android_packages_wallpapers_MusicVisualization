@@ -303,9 +303,10 @@ class Visualization5RS extends RenderScriptScene {
 
     void updateWave() {
         mHandler.removeCallbacks(mDrawCube);
-        if (mVisible) {
-            mHandler.postDelayed(mDrawCube, 20);
+        if (!mVisible) {
+            return;
         }
+        mHandler.postDelayed(mDrawCube, 20);
 
         int len = MediaPlayer.snoop(mVizData, 0);
         

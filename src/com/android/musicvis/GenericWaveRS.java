@@ -263,9 +263,10 @@ public class GenericWaveRS extends RenderScriptScene {
 
     void updateWave() {
         mHandler.removeCallbacks(mDrawCube);
-        if (mVisible) {
-            mHandler.postDelayed(mDrawCube, 20);
+        if (!mVisible) {
+            return;
         }
+        mHandler.postDelayed(mDrawCube, 20);
         update();
         mWorldState.waveCounter++;
         mState.data(mWorldState);
