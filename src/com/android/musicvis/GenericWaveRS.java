@@ -34,6 +34,7 @@ import android.renderscript.ScriptC;
 import android.renderscript.SimpleMesh;
 import android.renderscript.Type;
 import android.renderscript.Element.Builder;
+import android.util.Log;
 
 import java.util.TimeZone;
 
@@ -234,8 +235,9 @@ public class GenericWaveRS extends RenderScriptScene {
     public void setOffset(float xOffset, float yOffset,
             float xStep, float yStep, int xPixels, int yPixels) {
         // update our state, then push it to the renderscript
-        if (xStep == 0.0f) {
-            xStep = 1.0f;
+
+        if (xStep <= 0.0f) {
+            xStep = xOffset / 2; // originator didn't set step size, assume we're halfway
         }
         mWorldState.yRotation = (xOffset / xStep) * 180; // rotate 180 degrees per screen
         mState.data(mWorldState);
