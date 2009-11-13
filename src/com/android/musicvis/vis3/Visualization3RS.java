@@ -39,7 +39,7 @@ import java.util.TimeZone;
 
 class Visualization3RS extends GenericWaveRS {
 
-    private short [] mAnalyzer = new short[512];
+    private short [] mAnalyzer = new short[256];
 
     Visualization3RS(int width, int height) {
         super(width, height, R.drawable.ice);
@@ -60,7 +60,6 @@ class Visualization3RS extends GenericWaveRS {
     public void update() {
 
         int len = MediaPlayer.snoop(mVizData, 1);
-        int outlen = mPointData.length / 8;
 
         if (len == 0) {
             if (mWorldState.idle == 0) {
@@ -74,24 +73,36 @@ class Visualization3RS extends GenericWaveRS {
             mState.data(mWorldState);
         }
 
-        // we always get 256 points
+        // We always get 256 points
         for (int i=0; i < 256; i++) {
             short newval = (short)(mVizData[i] * (i/16+2));
-            short oldval = mAnalyzer[i * 2];
+            short oldval = mAnalyzer[i];
             if (newval >= oldval - 800) {
                 // use new high value
             } else {
                 newval = (short)(oldval - 800);
             }
-            // double the data, since the fft only returns 256 points
-            mAnalyzer[i * 2] = mAnalyzer[i * 2 + 1] = newval;
+            mAnalyzer[i] = newval;
         }
 
-        for(int i = 0; i < outlen; i++) {
-            float val = mAnalyzer[i] / 50;
+
+        // distribute the data over mWidth samples in the middle of the mPointData array
+        final int outlen = mPointData.length / 8;
+        final int width = mWidth;
+        final int skip = (outlen - mWidth) / 2;
+
+        int srcidx = 0;
+        int cnt = 0;
+        for (int i = 0; i < width; i++) {
+            float val = mAnalyzer[srcidx] / 50;
             if (val < 1f && val > -1f) val = 1;
-            mPointData[i*8+1] = val;
-            mPointData[i*8+5] = -val;
+            mPointData[(i + skip) * 8 + 1] = val;
+            mPointData[(i + skip) * 8 + 5] = -val;
+            cnt += 256;
+            if (cnt > width) {
+                srcidx++;
+                cnt -= width;
+            }
         }
         mPointAlloc.data(mPointData);
 

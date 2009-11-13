@@ -53,6 +53,7 @@ public class GenericWaveRS extends RenderScriptScene {
         public float yRotation;
         public int idle;
         public int waveCounter;
+        public int width;
     }
     protected WorldState mWorldState = new WorldState();
     private Type mStateType;
@@ -61,18 +62,18 @@ public class GenericWaveRS extends RenderScriptScene {
     private SimpleMesh mCubeMesh;
 
     protected Allocation mPointAlloc;
-    // 512 lines, with 4 points per line (2 space, 2 texture) each consisting of x and y,
+    // 1024 lines, with 4 points per line (2 space, 2 texture) each consisting of x and y,
     // so 8 floats per line.
-    protected float [] mPointData = new float[512*8];
+    protected float [] mPointData = new float[1024*8];
 
     private Allocation mLineIdxAlloc;
     // 2 indices per line
-    private short [] mIndexData = new short[512*2];
+    private short [] mIndexData = new short[1024*2];
 
     private ProgramVertex mPVBackground;
     private ProgramVertex.MatrixAllocation mPVAlloc;
 
-    protected short [] mVizData = new short[512];
+    protected short [] mVizData = new short[1024];
 
     private ProgramFragment mPfBackground;
     private Sampler mSampler;
@@ -105,6 +106,7 @@ public class GenericWaveRS extends RenderScriptScene {
     @Override
     public void resize(int width, int height) {
         super.resize(width, height);
+        mWorldState.width = width;
         if (mPVAlloc != null) {
             mPVAlloc.setupProjectionNormalized(mWidth, mHeight);
         }
@@ -121,6 +123,7 @@ public class GenericWaveRS extends RenderScriptScene {
         mState = Allocation.createTyped(mRS, mStateType);
         // set our java object as the data for the renderscript allocation
         mWorldState.yRotation = 0.0f;
+        mWorldState.width = mWidth;
         mState.data(mWorldState);
 
         /*
