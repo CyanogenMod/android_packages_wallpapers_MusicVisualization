@@ -24,32 +24,20 @@ import static android.renderscript.Sampler.Value.WRAP;
 import com.android.musicvis.R;
 import com.android.musicvis.RenderScriptScene;
 
-import android.graphics.Canvas;
-import android.graphics.Rect;
 import android.media.MediaPlayer;
-import android.opengl.GLES10;
 import android.os.Handler;
 import android.renderscript.Allocation;
 import android.renderscript.Element;
-import android.renderscript.Primitive;
 import android.renderscript.ProgramFragment;
-import android.renderscript.ProgramRaster;
 import android.renderscript.ProgramStore;
 import android.renderscript.ProgramVertex;
 import android.renderscript.Sampler;
 import android.renderscript.ScriptC;
-import android.renderscript.SimpleMesh;
 import android.renderscript.Type;
-import android.renderscript.Element.Builder;
 import android.renderscript.ProgramStore.BlendDstFunc;
 import android.renderscript.ProgramStore.BlendSrcFunc;
-import android.util.Log;
-import android.view.SurfaceHolder;
 
-import java.nio.IntBuffer;
 import java.util.TimeZone;
-
-import javax.microedition.khronos.opengles.GL10;
 
 class Visualization4RS extends RenderScriptScene {
 
@@ -170,7 +158,7 @@ class Visualization4RS extends RenderScriptScene {
             mPfsBackground = builder.create();
             mPfsBackground.setName("PFSBackground");
         }
-        
+
         // Time to create the script
         ScriptC.Builder sb = new ScriptC.Builder(mRS);
         // Specify the name by which to refer to the WorldState object in the

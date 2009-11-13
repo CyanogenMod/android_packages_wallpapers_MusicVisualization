@@ -33,7 +33,7 @@ int wave3pos = 0;
 int wave3amp= 0;
 int wave4pos = 0;
 int wave4amp= 0;
-float idle[4096];
+float idle[8192];
 int waveCounter = 0;
 
 void makeIdleWave(float *points) {
@@ -43,7 +43,10 @@ void makeIdleWave(float *points) {
     float amp2 = sinf(0.023 * wave2amp) * 80;
     float amp3 = sinf(0.011 * wave3amp) * 40;
     float amp4 = sinf(0.031 * wave4amp) * 20;
-    for (i = 0; i < 512; i++) {
+    // calculate how many invisible lines there are on each side
+    int skip = (1024 - State->width) / 2;
+    int end = 1024 - skip;
+    for (i = skip; i < end; i++) {
         float val = sinf(0.013 * (wave1pos + i)) * amp1
                   + sinf(0.029 * (wave2pos + i)) * amp2;
         float off = sinf(0.005 * (wave3pos + i)) * amp3
@@ -66,13 +69,18 @@ int main(int launchID) {
 
     int i;
 
+    // calculate how many invisible lines there are on each side
+    int width = State->width;
+    int skip = (1024 - width) / 2;
+    int end = 1024 - skip;
+
     if (State->idle) {
 
         // idle state animation
         float *points = loadArrayF(RSID_POINTS, 0);
         if (fadeoutcounter > 0) {
             // fade waveform to 0
-            for (i = 0; i < 512; i++) {
+            for (i = skip; i < end; i++) {
                 float val = absf(points[i*8+1]);
                 val = val * FADEOUT_FACTOR;
                 if (val < 2.f) val = 2.f;
@@ -98,7 +106,7 @@ int main(int launchID) {
             if (waveCounter != State->waveCounter) {
                 waveCounter = State->waveCounter;
                 float *points = loadArrayF(RSID_POINTS, 0);
-                for (i = 0; i < 512; i++) {
+                for (i = skip; i < end; i++) {
                     float val = absf(points[i*8+1]);
                     points[i*8+1] = (val * (FADEIN_LENGTH - fadeincounter) + idle[i*8+1] * fadeincounter) / FADEIN_LENGTH;
                     points[i*8+5] = (-val * (FADEIN_LENGTH - fadeincounter) + idle[i*8+5] * fadeincounter) / FADEIN_LENGTH;
@@ -115,7 +123,7 @@ int main(int launchID) {
 
     float mat1[16];
     float yrot = State->yRotation;
-    float scale = 0.004f * (1.0f + 2.f * absf(sinf(radf(yrot))));
+    float scale = 0.004165f * (1.0f + 2.f * absf(sinf(radf(yrot))));
 
     // Change the model matrix to account for the large model
     // and to do the necessary rotations.
@@ -126,7 +134,7 @@ int main(int launchID) {
     // Draw the visualizer.
     uploadToBufferObject(NAMED_PointBuffer);
     bindTexture(NAMED_PFBackground, 0, NAMED_Tlinetexture);
-    drawSimpleMesh(NAMED_CubeMesh);
+    drawSimpleMeshRange(NAMED_CubeMesh, skip * 2, width * 2);
 
     return 1;
 }
