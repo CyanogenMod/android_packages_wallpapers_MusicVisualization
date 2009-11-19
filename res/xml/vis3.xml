@@ -21,7 +21,7 @@
 <!-- for the cube. -->
 
 <wallpaper xmlns:android="http://schemas.android.com/apk/res/android"
-    android:wallpaperAuthor="@string/author"
-    android:wallpaperDescription="@string/vis3_desc"
+    android:author="@string/author"
+    android:description="@string/vis3_desc"
     android:thumbnail="@drawable/vis3"
 />
