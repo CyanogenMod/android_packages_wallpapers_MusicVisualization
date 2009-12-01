@@ -15,7 +15,6 @@
 #pragma version(1)
 #pragma stateVertex(PVBackground)
 #pragma stateRaster(parent)
-#pragma stateFragment(PFBackground)
 #pragma stateStore(PFSBackground)
 
 #define RSID_POINTS 1
@@ -39,8 +38,10 @@ void drawVU(float* ident) {
     matrixScale(mat1, scale, scale, scale);
     vpLoadModelMatrix(mat1);
 
+    bindProgramFragment(NAMED_PFBackgroundMip);
+
     // draw the background image (416x233)
-    bindTexture(NAMED_PFBackground, 0, NAMED_Tvumeter_background);
+    bindTexture(NAMED_PFBackgroundMip, 0, NAMED_Tvumeter_background);
     drawQuadTexCoords(
             -208.0f, -33.0f, 600.0f,        // space
                 0.09375f, 0.9551f,        // texture
@@ -53,9 +54,9 @@ void drawVU(float* ident) {
 
     // draw the peak indicator light (56x58)
     if (State->mPeak > 0) {
-        bindTexture(NAMED_PFBackground, 0, NAMED_Tvumeter_peak_on);
+        bindTexture(NAMED_PFBackgroundMip, 0, NAMED_Tvumeter_peak_on);
     } else {
-        bindTexture(NAMED_PFBackground, 0, NAMED_Tvumeter_peak_off);
+        bindTexture(NAMED_PFBackgroundMip, 0, NAMED_Tvumeter_peak_off);
     }
     drawQuadTexCoords(
             140.0f, 70.0f, 600.0f,         // space
@@ -77,7 +78,7 @@ void drawVU(float* ident) {
     matrixRotate(mat1, State->mAngle - 90.f, 0.f, 0.f, 1.f);
     matrixScale(mat1, scale, scale, scale);
     vpLoadModelMatrix(mat1);
-    bindTexture(NAMED_PFBackground, 0, NAMED_Tvumeter_needle);
+    bindTexture(NAMED_PFBackgroundMip, 0, NAMED_Tvumeter_needle);
     drawQuadTexCoords(
             -44.0f, -102.0f+57.f, 600.0f,         // space
                 .15625f, 0.755859375f,  // texture
@@ -96,7 +97,7 @@ void drawVU(float* ident) {
     vpLoadModelMatrix(mat1);
 
     // erase the part of the needle we don't want to show
-    bindTexture(NAMED_PFBackground, 0, NAMED_Tvumeter_black);
+    bindTexture(NAMED_PFBackgroundMip, 0, NAMED_Tvumeter_black);
     drawQuad(-100.f, -55.f, 600.f,
              -100.f, -105.f, 600.f,
               100.f, -105.f, 600.f,
@@ -104,7 +105,7 @@ void drawVU(float* ident) {
 
 
     // draw the frame (472x290)
-    bindTexture(NAMED_PFBackground, 0, NAMED_Tvumeter_frame);
+    bindTexture(NAMED_PFBackgroundMip, 0, NAMED_Tvumeter_frame);
     drawQuadTexCoords(
             -236.0f, -60.0f, 600.0f,           // space
                 0.0390625f, 0.783203125f,    // texture
@@ -211,7 +212,8 @@ void drawWave(float *ident) {
     }
 
     uploadToBufferObject(NAMED_PointBuffer);
-    bindTexture(NAMED_PFBackground, 0, NAMED_Tlinetexture);
+    bindProgramFragment(NAMED_PFBackgroundNoMip);
+    bindTexture(NAMED_PFBackgroundNoMip, 0, NAMED_Tlinetexture);
     drawSimpleMesh(NAMED_CubeMesh);
 }
 
@@ -241,6 +243,7 @@ int main(int launchID) {
     matrixRotate(ident, State->mTilt, 1.f, 0.f, 0.f);
     matrixRotate(ident, autorotation + State->mRotate, 0.f, 1.f, 0.f);
     autorotation += .3;
+    while (autorotation > 360.f) autorotation -= 360.f;
 
     // draw the reflections
     matrixTranslate(ident, 0.f, -1.f, 0.f);
@@ -248,7 +251,8 @@ int main(int launchID) {
     drawVizLayer(ident);
 
     // draw the reflecting plane
-    bindTexture(NAMED_PFBackground, 0, NAMED_Tvumeter_album);
+    bindProgramFragment(NAMED_PFBackgroundMip);
+    bindTexture(NAMED_PFBackgroundMip, 0, NAMED_Tvumeter_album);
     drawQuadTexCoords(
             -1500.0f, -60.0f, 1500.0f,           // space
                 0.f, 1.f,    // texture
@@ -258,7 +262,6 @@ int main(int launchID) {
                 1.f, 0.f,    // texture
             -1500.0f, -60.0f, -1500.0f,           // space
                 0.f, 0.f);   // texture
-
 
     // draw the visualizer
     matrixScale(ident, 1.f, -1.f, 1.f);
