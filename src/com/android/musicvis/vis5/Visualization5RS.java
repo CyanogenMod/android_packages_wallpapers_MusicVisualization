@@ -17,8 +17,6 @@
 package com.android.musicvis.vis5;
 
 import static android.renderscript.ProgramFragment.EnvMode.REPLACE;
-import static android.renderscript.Sampler.Value.LINEAR;
-import static android.renderscript.Sampler.Value.WRAP;
 
 import com.android.musicvis.R;
 import com.android.musicvis.RenderScriptScene;
@@ -38,6 +36,7 @@ import android.renderscript.Type;
 import android.renderscript.Element.Builder;
 import android.renderscript.ProgramStore.BlendDstFunc;
 import android.renderscript.ProgramStore.BlendSrcFunc;
+import android.renderscript.Sampler.Value;
 import android.util.Log;
 import android.view.MotionEvent;
 
@@ -72,8 +71,10 @@ class Visualization5RS extends RenderScriptScene {
     private Allocation mState;
 
     private ProgramStore mPfsBackground;
-    private ProgramFragment mPfBackground;
-    private Sampler mSampler;
+    private ProgramFragment mPfBackgroundMip;
+    private ProgramFragment mPfBackgroundNoMip;
+    private Sampler mSamplerMip;
+    private Sampler mSamplerNoMip;
     private Allocation[] mTextures;
     
     private ProgramVertex mPVBackground;
@@ -173,19 +174,19 @@ class Visualization5RS extends RenderScriptScene {
         mPVAlloc.setupProjectionNormalized(mWidth, mHeight);
 
         mTextures = new Allocation[8];
-        mTextures[0] = Allocation.createFromBitmapResourceBoxed(mRS, mResources, R.drawable.background, Element.RGBA_8888(mRS), false);
+        mTextures[0] = Allocation.createFromBitmapResourceBoxed(mRS, mResources, R.drawable.background, Element.RGBA_8888(mRS), true);
         mTextures[0].setName("Tvumeter_background");
-        mTextures[1] = Allocation.createFromBitmapResourceBoxed(mRS, mResources, R.drawable.frame, Element.RGBA_8888(mRS), false);
+        mTextures[1] = Allocation.createFromBitmapResourceBoxed(mRS, mResources, R.drawable.frame, Element.RGBA_8888(mRS), true);
         mTextures[1].setName("Tvumeter_frame");
-        mTextures[2] = Allocation.createFromBitmapResourceBoxed(mRS, mResources, R.drawable.peak_on, Element.RGBA_8888(mRS), false);
+        mTextures[2] = Allocation.createFromBitmapResourceBoxed(mRS, mResources, R.drawable.peak_on, Element.RGBA_8888(mRS), true);
         mTextures[2].setName("Tvumeter_peak_on");
-        mTextures[3] = Allocation.createFromBitmapResourceBoxed(mRS, mResources, R.drawable.peak_off, Element.RGBA_8888(mRS), false);
+        mTextures[3] = Allocation.createFromBitmapResourceBoxed(mRS, mResources, R.drawable.peak_off, Element.RGBA_8888(mRS), true);
         mTextures[3].setName("Tvumeter_peak_off");
-        mTextures[4] = Allocation.createFromBitmapResourceBoxed(mRS, mResources, R.drawable.needle, Element.RGBA_8888(mRS), false);
+        mTextures[4] = Allocation.createFromBitmapResourceBoxed(mRS, mResources, R.drawable.needle, Element.RGBA_8888(mRS), true);
         mTextures[4].setName("Tvumeter_needle");
         mTextures[5] = Allocation.createFromBitmapResourceBoxed(mRS, mResources, R.drawable.black, Element.RGB_565(mRS), false);
         mTextures[5].setName("Tvumeter_black");
-        mTextures[6] = Allocation.createFromBitmapResource(mRS, mResources, R.drawable.albumart, Element.RGBA_8888(mRS), false);
+        mTextures[6] = Allocation.createFromBitmapResource(mRS, mResources, R.drawable.albumart, Element.RGBA_8888(mRS), true);
         mTextures[6].setName("Tvumeter_album");
         mTextures[7] = Allocation.createFromBitmapResource(mRS, mResources, R.drawable.fire, Element.RGB_565(mRS), false);
         mTextures[7].setName("Tlinetexture");
@@ -194,21 +195,41 @@ class Visualization5RS extends RenderScriptScene {
         for (int i = 0; i < count; i++) {
             mTextures[i].uploadToTexture(0);
         }
-        
-        Sampler.Builder samplerBuilder = new Sampler.Builder(mRS);
-        samplerBuilder.setMin(LINEAR);
-        samplerBuilder.setMag(LINEAR);
-        samplerBuilder.setWrapS(WRAP);
-        samplerBuilder.setWrapT(WRAP);
-        mSampler = samplerBuilder.create();
+
+        {
+            Sampler.Builder builder = new Sampler.Builder(mRS);
+            builder.setMin(Value.LINEAR);
+            builder.setMag(Value.LINEAR);
+            builder.setWrapS(Value.WRAP);
+            builder.setWrapT(Value.WRAP);
+            mSamplerNoMip = builder.create();
+        }
+
+        {
+            Sampler.Builder builder = new Sampler.Builder(mRS);
+            builder.setMin(Value.LINEAR_MIP_LINEAR);
+            builder.setMag(Value.LINEAR);
+            builder.setWrapS(Value.WRAP);
+            builder.setWrapT(Value.WRAP);
+            mSamplerMip = builder.create();
+        }
 
         {
             ProgramFragment.Builder builder = new ProgramFragment.Builder(mRS, null, null);
             builder.setTexEnable(true, 0);
             builder.setTexEnvMode(REPLACE, 0);
-            mPfBackground = builder.create();
-            mPfBackground.setName("PFBackground");
-            mPfBackground.bindSampler(mSampler, 0);
+            mPfBackgroundNoMip = builder.create();
+            mPfBackgroundNoMip.setName("PFBackgroundNoMip");
+            mPfBackgroundNoMip.bindSampler(mSamplerNoMip, 0);
+        }
+        
+        {
+            ProgramFragment.Builder builder = new ProgramFragment.Builder(mRS, null, null);
+            builder.setTexEnable(true, 0);
+            builder.setTexEnvMode(REPLACE, 0);
+            mPfBackgroundMip = builder.create();
+            mPfBackgroundMip.setName("PFBackgroundMip");
+            mPfBackgroundMip.bindSampler(mSamplerMip, 0);
         }
 
         {
