@@ -131,6 +131,8 @@ int wave4pos = 0;
 int wave4amp= 0;
 float idle[4096];
 int waveCounter = 0;
+int lastuptime = 0;
+float autorotation = 0;
 
 #define FADEOUT_LENGTH 100
 #define FADEOUT_FACTOR 0.95f
@@ -217,7 +219,6 @@ void drawWave(float *ident) {
     drawSimpleMesh(NAMED_CubeMesh);
 }
 
-float autorotation = 0;
 
 void drawVizLayer(float *ident) {
 
@@ -239,11 +240,18 @@ int main(int launchID) {
 
     int i;
     float ident[16];
+    int now = uptimeMillis();
+    int delta = now - lastuptime;
+    lastuptime = now;
+    if (delta > 5000) {
+        delta = 100;
+    }
+    autorotation += .3 * delta / 35;
+    while (autorotation > 360.f) autorotation -= 360.f;
+
     matrixLoadIdentity(ident);
     matrixRotate(ident, State->mTilt, 1.f, 0.f, 0.f);
     matrixRotate(ident, autorotation + State->mRotate, 0.f, 1.f, 0.f);
-    autorotation += .3;
-    while (autorotation > 360.f) autorotation -= 360.f;
 
     // draw the reflections
     matrixTranslate(ident, 0.f, -1.f, 0.f);
