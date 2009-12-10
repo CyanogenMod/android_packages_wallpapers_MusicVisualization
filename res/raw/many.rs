@@ -243,8 +243,12 @@ int main(int launchID) {
     int now = uptimeMillis();
     int delta = now - lastuptime;
     lastuptime = now;
-    if (delta > 5000) {
-        delta = 100;
+    if (delta > 80) {
+        // Limit the delta to avoid jumps when coming back from sleep.
+        // A value of 80 will make the rotation keep the same speed
+        // until the frame rate drops to 12.5 fps, at which point it
+        // will start slowing down.
+        delta = 80;
     }
     autorotation += .3 * delta / 35;
     while (autorotation > 360.f) autorotation -= 360.f;

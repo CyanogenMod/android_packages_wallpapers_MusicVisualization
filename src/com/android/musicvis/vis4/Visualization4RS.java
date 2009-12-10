@@ -16,7 +16,6 @@
 
 package com.android.musicvis.vis4;
 
-import static android.renderscript.ProgramFragment.EnvMode.REPLACE;
 import static android.renderscript.ProgramStore.DepthFunc.ALWAYS;
 import static android.renderscript.Sampler.Value.LINEAR;
 import static android.renderscript.Sampler.Value.WRAP;
@@ -54,7 +53,7 @@ class Visualization4RS extends RenderScriptScene {
     // tweak this to get quicker/slower response
     private int mNeedleMass = 10;
     private int mSpringForceAtOrigin = 200;
-    
+
     static class WorldState {
         public float mAngle;
         public int   mPeak;
@@ -67,7 +66,7 @@ class Visualization4RS extends RenderScriptScene {
     private ProgramFragment mPfBackground;
     private Sampler mSampler;
     private Allocation[] mTextures;
-    
+
     private ProgramVertex mPVBackground;
     private ProgramVertex.MatrixAllocation mPVAlloc;
 
@@ -131,7 +130,7 @@ class Visualization4RS extends RenderScriptScene {
         for (int i = 0; i < count; i++) {
             mTextures[i].uploadToTexture(0);
         }
-        
+
         Sampler.Builder samplerBuilder = new Sampler.Builder(mRS);
         samplerBuilder.setMin(LINEAR);
         samplerBuilder.setMag(LINEAR);
@@ -140,9 +139,9 @@ class Visualization4RS extends RenderScriptScene {
         mSampler = samplerBuilder.create();
 
         {
-            ProgramFragment.Builder builder = new ProgramFragment.Builder(mRS, null, null);
-            builder.setTexEnable(true, 0);
-            builder.setTexEnvMode(REPLACE, 0);
+            ProgramFragment.Builder builder = new ProgramFragment.Builder(mRS);
+            builder.setTexture(ProgramFragment.Builder.EnvMode.REPLACE,
+                               ProgramFragment.Builder.Format.RGBA, 0);
             mPfBackground = builder.create();
             mPfBackground.setName("PFBackground");
             mPfBackground.bindSampler(mSampler, 0);
@@ -198,7 +197,7 @@ class Visualization4RS extends RenderScriptScene {
         mHandler.postDelayed(mDrawCube, 20);
 
         int len = MediaPlayer.snoop(mVizData, 0);
-        
+
         // Simulate running the signal through a rectifier by
         // taking the average of the absolute sample values.
         int volt = 0;
@@ -224,8 +223,8 @@ class Visualization4RS extends RenderScriptScene {
         // The friction force is a function of the speed of the needle, but so is
         // the current induced by the movement of the needle, so we can combine
         // them.
-        
-        
+
+
         // Add up the various forces, with some multipliers to make the movement
         // of the needle more realistic
         // 'volt' is for the applied voltage, which causes a current to flow through the coil
