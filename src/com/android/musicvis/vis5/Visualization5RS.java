@@ -16,8 +16,6 @@
 
 package com.android.musicvis.vis5;
 
-import static android.renderscript.ProgramFragment.EnvMode.REPLACE;
-
 import com.android.musicvis.R;
 import com.android.musicvis.RenderScriptScene;
 
@@ -57,7 +55,7 @@ class Visualization5RS extends RenderScriptScene {
     // tweak this to get quicker/slower response
     private int mNeedleMass = 10;
     private int mSpringForceAtOrigin = 200;
-    
+
     static class WorldState {
         public float mAngle;
         public int   mPeak;
@@ -76,7 +74,7 @@ class Visualization5RS extends RenderScriptScene {
     private Sampler mSamplerMip;
     private Sampler mSamplerNoMip;
     private Allocation[] mTextures;
-    
+
     private ProgramVertex mPVBackground;
     private ProgramVertex.MatrixAllocation mPVAlloc;
 
@@ -90,7 +88,7 @@ class Visualization5RS extends RenderScriptScene {
     private Allocation mLineIdxAlloc;
     // 2 indices per line
     private short [] mIndexData = new short[256*2];
-    
+
     private short [] mVizData = new short[1024];
 
     private static final int RSID_STATE = 0;
@@ -99,7 +97,7 @@ class Visualization5RS extends RenderScriptScene {
     private static final int RSID_PROGRAMVERTEX = 3;
 
     private float mTouchY;
-    
+
     Visualization5RS(int width, int height) {
         super(width, height);
         mWidth = width;
@@ -146,7 +144,7 @@ class Visualization5RS extends RenderScriptScene {
                 mState.data(mWorldState);
         }
     }
-    
+
     @Override
     public void setOffset(float xOffset, float yOffset,
             float xStep, float yStep, int xPixels, int yPixels) {
@@ -215,18 +213,18 @@ class Visualization5RS extends RenderScriptScene {
         }
 
         {
-            ProgramFragment.Builder builder = new ProgramFragment.Builder(mRS, null, null);
-            builder.setTexEnable(true, 0);
-            builder.setTexEnvMode(REPLACE, 0);
+            ProgramFragment.Builder builder = new ProgramFragment.Builder(mRS);
+            builder.setTexture(ProgramFragment.Builder.EnvMode.REPLACE,
+                               ProgramFragment.Builder.Format.RGBA, 0);
             mPfBackgroundNoMip = builder.create();
             mPfBackgroundNoMip.setName("PFBackgroundNoMip");
             mPfBackgroundNoMip.bindSampler(mSamplerNoMip, 0);
         }
-        
+
         {
-            ProgramFragment.Builder builder = new ProgramFragment.Builder(mRS, null, null);
-            builder.setTexEnable(true, 0);
-            builder.setTexEnvMode(REPLACE, 0);
+            ProgramFragment.Builder builder = new ProgramFragment.Builder(mRS);
+            builder.setTexture(ProgramFragment.Builder.EnvMode.REPLACE,
+                               ProgramFragment.Builder.Format.RGBA, 0);
             mPfBackgroundMip = builder.create();
             mPfBackgroundMip.setName("PFBackgroundMip");
             mPfBackgroundMip.bindSampler(mSamplerMip, 0);
@@ -242,7 +240,7 @@ class Visualization5RS extends RenderScriptScene {
             mPfsBackground = builder.create();
             mPfsBackground.setName("PFSBackground");
         }
-        
+
         // Start creating the mesh
         final SimpleMesh.Builder meshBuilder = new SimpleMesh.Builder(mRS);
 
@@ -330,7 +328,7 @@ class Visualization5RS extends RenderScriptScene {
         mHandler.postDelayed(mDrawCube, 20);
 
         int len = MediaPlayer.snoop(mVizData, 0);
-        
+
         // Simulate running the signal through a rectifier by
         // taking the average of the absolute sample values.
         int volt = 0;
@@ -356,8 +354,8 @@ class Visualization5RS extends RenderScriptScene {
         // The friction force is a function of the speed of the needle, but so is
         // the current induced by the movement of the needle, so we can combine
         // them.
-        
-        
+
+
         // Add up the various forces, with some multipliers to make the movement
         // of the needle more realistic
         // 'volt' is for the applied voltage, which causes a current to flow through the coil
@@ -383,9 +381,9 @@ class Visualization5RS extends RenderScriptScene {
         }
 
         mWorldState.mAngle = 131f - (mNeedlePos / 410f); // ~80 degree range
-        
+
         // downsample 1024 samples in to 256
-        
+
         if (len == 0) {
             if (mWorldState.mIdle == 0) {
                 mWorldState.mIdle = 1;
@@ -406,7 +404,7 @@ class Visualization5RS extends RenderScriptScene {
             mPointAlloc.data(mPointData);
             mWorldState.mWaveCounter++;
         }
-        
+
         mState.data(mWorldState);
     }
 
