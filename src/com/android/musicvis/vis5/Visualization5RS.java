@@ -246,11 +246,8 @@ class Visualization5RS extends RenderScriptScene {
 
         // Create the Element for the points
         Builder elementBuilder = new Builder(mRS);
-        // By specifying a prefix, even an empty one, the members will be accessible
-        // in the renderscript. If we just called addFloatXYZ(), the members would be
-        // unnamed in the renderscript struct definition.
-        elementBuilder.addFloatXY("");
-        elementBuilder.addFloatST("");
+        elementBuilder.add(Element.ATTRIB_POSITION_2(mRS), "position");
+        elementBuilder.add(Element.ATTRIB_TEXTURE_2(mRS), "texture");
         final Element vertexElement = elementBuilder.create();
         final int vertexSlot = meshBuilder.addVertexType(vertexElement, mPointData.length / 4);
         // Specify the type and number of indices we need. We'll allocate them later.
