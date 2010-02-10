@@ -18,6 +18,7 @@
 package com.android.musicvis;
 
 import android.service.wallpaper.WallpaperService;
+import android.renderscript.RenderScriptGL;
 import android.renderscript.RenderScript;
 import android.view.MotionEvent;
 import android.view.SurfaceHolder;
@@ -31,7 +32,7 @@ public abstract class RenderScriptWallpaper<T extends RenderScriptScene> extends
     protected abstract T createScene(int width, int height);
 
     private class RenderScriptEngine extends Engine {
-        private RenderScript mRs;
+        private RenderScriptGL mRs;
         private T mRenderer;
 
         @Override
@@ -55,7 +56,7 @@ public abstract class RenderScriptWallpaper<T extends RenderScriptScene> extends
             if (mRs != null) {
                 mRs.destroy();
                 mRs = null;
-            }            
+            }
         }
 
         @Override
@@ -63,7 +64,7 @@ public abstract class RenderScriptWallpaper<T extends RenderScriptScene> extends
             super.onVisibilityChanged(visible);
             if (mRenderer != null) {
                 if (visible) {
-                    mRenderer.start();                
+                    mRenderer.start();
                 } else {
                     mRenderer.stop();
                 }
@@ -89,7 +90,7 @@ public abstract class RenderScriptWallpaper<T extends RenderScriptScene> extends
         public void onTouchEvent(MotionEvent event) {
             mRenderer.onTouchEvent(event);
         }
-        
+
         @Override
         public void onOffsetsChanged(float xOffset, float yOffset,
                 float xStep, float yStep, int xPixels, int yPixels) {
@@ -104,7 +105,7 @@ public abstract class RenderScriptWallpaper<T extends RenderScriptScene> extends
             while (surface == null) {
                 surface = holder.getSurface();
             }
-            mRs = new RenderScript(false, false);
+            mRs = new RenderScriptGL(false, false);
             mRs.contextSetPriority(RenderScript.Priority.LOW);
         }
 
