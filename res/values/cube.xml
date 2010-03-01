@@ -28,7 +28,7 @@
 
     <!-- x,y,z tuples for the points defining the object -->
     <!-- stored as strings for easier human readability -->
-    <string-array name="points">
+    <string-array name="points" translatable="false">
         <item>"-400 -400 -400"</item>
         <item>"400 -400 -400"</item>
         <item>"400 400 -400"</item>
@@ -40,7 +40,7 @@
     </string-array>
 
     <!-- start,end point index tuples of the lines defining the object -->
-    <string-array name="lines">
+    <string-array name="lines" translatable="false">
         <!-- lines forming one face -->
         <item>"0 1"</item>
         <item>"1 2"</item>

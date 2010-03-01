@@ -20,28 +20,4 @@
     <string name="wallpaper_vis3" msgid="3007445671726137442">"スペクトラム"</string>
     <string name="wallpaper_vis4" msgid="6050134144984656120">"音量メーター"</string>
     <string name="wallpaper_vis5" msgid="6639280366165624426">"一括"</string>
-  <string-array name="points">
-    <item msgid="4626755943672856365">"-400 -400 -400"</item>
-    <item msgid="8451979312917810711">"400 -400 -400"</item>
-    <item msgid="1532179307622249497">"400 400 -400"</item>
-    <item msgid="5773820369907069729">"-400 400 -400"</item>
-    <item msgid="6054226526572000047">"-400 -400 400"</item>
-    <item msgid="5841779734296836298">"400 -400 400"</item>
-    <item msgid="6610645147240210713">"400 400 400"</item>
-    <item msgid="3967294234966314935">"-400 400 400"</item>
-  </string-array>
-  <string-array name="lines">
-    <item msgid="1966916441971439920">"0 1"</item>
-    <item msgid="8182444424689677981">"1 2"</item>
-    <item msgid="2896071932360588558">"2 3"</item>
-    <item msgid="3685511279695761514">"3 0"</item>
-    <item msgid="4086947623318516270">"4 5"</item>
-    <item msgid="2407218551842797899">"5 6"</item>
-    <item msgid="7190777561202910093">"6 7"</item>
-    <item msgid="6945261059789623488">"7 4"</item>
-    <item msgid="4467415617377561735">"0 4"</item>
-    <item msgid="3883451914142095262">"1 5"</item>
-    <item msgid="3563802830116627583">"2 6"</item>
-    <item msgid="2049140738309927739">"3 7"</item>
-  </string-array>
 </resources>
