@@ -238,7 +238,8 @@ public class GenericWaveRS extends RenderScriptScene {
         if (xStep <= 0.0f) {
             xStep = xOffset / 2; // originator didn't set step size, assume we're halfway
         }
-        mWorldState.yRotation = (xOffset / xStep) * 180; // rotate 180 degrees per screen
+        // rotate 180 degrees per screen
+        mWorldState.yRotation = xStep == 0.f ? 0.f : (xOffset / xStep) * 180;
         mState.data(mWorldState);
     }
 

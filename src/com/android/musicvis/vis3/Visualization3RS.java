@@ -52,7 +52,8 @@ class Visualization3RS extends GenericWaveRS {
         if (xStep <= 0.0f) {
             xStep = xOffset / 2; // originator didn't set step size, assume we're halfway
         }
-        mWorldState.yRotation = (xOffset / xStep) * 360; // rotate 360 degrees per screen
+        // rotate 360 degrees per screen
+        mWorldState.yRotation = xStep == 0.f ? 0.f : (xOffset / xStep) * 360;
         mState.data(mWorldState);
     }
 
