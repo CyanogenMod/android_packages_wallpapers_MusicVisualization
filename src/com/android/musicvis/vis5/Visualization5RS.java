@@ -155,7 +155,7 @@ class Visualization5RS extends RenderScriptScene {
 
     @Override
     protected ScriptC createScript() {
-
+/*
         // Create a renderscript type from a java class. The specified name doesn't
         // really matter; the name by which we refer to the object in RenderScript
         // will be specified later.
@@ -268,17 +268,13 @@ class Visualization5RS extends RenderScriptScene {
         mCubeMesh.bindVertexAllocation(mPointAlloc, 0);
         mCubeMesh.bindIndexAllocation(mLineIdxAlloc);
 
-        /*
-         *  put the vertex and index data in their respective buffers
-         */
+        // put the vertex and index data in their respective buffers
         updateWave();
         for(int i = 0; i < mIndexData.length; i ++) {
             mIndexData[i] = (short) i;
         }
 
-        /*
-         *  upload the vertex and index data
-         */
+        //  upload the vertex and index data
         mPointAlloc.data(mPointData);
         mPointAlloc.uploadToBufferObject();
         mLineIdxAlloc.data(mIndexData);
@@ -302,6 +298,8 @@ class Visualization5RS extends RenderScriptScene {
         script.bindAllocation(mPVAlloc.mAlloc, RSID_PROGRAMVERTEX);
 
         return script;
+        */
+            return null;
     }
 
     @Override

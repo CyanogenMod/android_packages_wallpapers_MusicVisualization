@@ -113,7 +113,7 @@ public class GenericWaveRS extends RenderScriptScene {
 
     @Override
     protected ScriptC createScript() {
-
+/*
         // Create a renderscript type from a java class. The specified name doesn't
         // really matter; the name by which we refer to the object in RenderScript
         // will be specified later.
@@ -125,12 +125,10 @@ public class GenericWaveRS extends RenderScriptScene {
         mWorldState.width = mWidth;
         mState.data(mWorldState);
 
-        /*
-         *  Now put our model in to a form that renderscript can work with:
-         *  - create a buffer of floats that are the coordinates for the points that define the cube
-         *  - create a buffer of integers that are the indices of the points that form lines
-         *  - combine the two in to a mesh
-         */
+        //  Now put our model in to a form that renderscript can work with:
+        //  - create a buffer of floats that are the coordinates for the points that define the cube
+        //  - create a buffer of integers that are the indices of the points that form lines
+        //  - combine the two in to a mesh
 
         // First set up the coordinate system and such
         ProgramVertex.Builder pvb = new ProgramVertex.Builder(mRS, null, null);
@@ -167,32 +165,24 @@ public class GenericWaveRS extends RenderScriptScene {
         mCubeMesh.bindVertexAllocation(mPointAlloc, 0);
         mCubeMesh.bindIndexAllocation(mLineIdxAlloc);
 
-        /*
-         *  put the vertex and index data in their respective buffers
-         */
+        //  put the vertex and index data in their respective buffers
         updateWave();
         for(int i = 0; i < mIndexData.length; i ++) {
             mIndexData[i] = (short) i;
         }
 
-        /*
-         *  upload the vertex and index data
-         */
+        //  upload the vertex and index data
         mPointAlloc.data(mPointData);
         mPointAlloc.uploadToBufferObject();
         mLineIdxAlloc.data(mIndexData);
         mLineIdxAlloc.uploadToBufferObject();
 
-        /*
-         * load the texture
-         */
+        // load the texture
         mTexture = Allocation.createFromBitmapResourceBoxed(mRS, mResources, mTexId, RGB_565(mRS), false);
         mTexture.setName("Tlinetexture");
         mTexture.uploadToTexture(0);
 
-        /*
-         * create a program fragment to use the texture
-         */
+        // create a program fragment to use the texture
         Sampler.Builder samplerBuilder = new Sampler.Builder(mRS);
         samplerBuilder.setMin(LINEAR);
         samplerBuilder.setMag(LINEAR);
@@ -228,6 +218,8 @@ public class GenericWaveRS extends RenderScriptScene {
         script.bindAllocation(mPVAlloc.mAlloc, RSID_PROGRAMVERTEX);
 
         return script;
+        */
+        return null;
     }
 
     @Override

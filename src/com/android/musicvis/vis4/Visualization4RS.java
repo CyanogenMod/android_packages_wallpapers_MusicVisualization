@@ -94,7 +94,7 @@ class Visualization4RS extends RenderScriptScene {
 
     @Override
     protected ScriptC createScript() {
-
+/*
         // Create a renderscript type from a java class. The specified name doesn't
         // really matter; the name by which we refer to the object in RenderScript
         // will be specified later.
@@ -174,6 +174,8 @@ class Visualization4RS extends RenderScriptScene {
         script.bindAllocation(mPVAlloc.mAlloc, RSID_PROGRAMVERTEX);
 
         return script;
+        */
+        return null;
     }
 
     @Override
