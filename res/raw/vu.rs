@@ -13,23 +13,46 @@
 // limitations under the License.
 
 #pragma version(1)
-#pragma stateVertex(PVBackground)
-#pragma stateRaster(parent)
-#pragma stateFragment(PFBackground)
-#pragma stateStore(PFSBackground)
+
+#include "../../../../../frameworks/base/libs/rs/scriptc/rs_types.rsh"
+#include "../../../../../frameworks/base/libs/rs/scriptc/rs_math.rsh"
+#include "../../../../../frameworks/base/libs/rs/scriptc/rs_graphics.rsh"
+
+// State
+float gAngle;
+int   gPeak;
+
+rs_program_vertex gPVBackground;
+rs_program_fragment gPFBackground;
+
+rs_allocation gTvumeter_background;
+rs_allocation gTvumeter_peak_on;
+rs_allocation gTvumeter_peak_off;
+rs_allocation gTvumeter_needle;
+rs_allocation gTvumeter_black;
+rs_allocation gTvumeter_frame;
+
+rs_program_store gPFSBackground;
+
+#pragma rs export_var(gAngle, gPeak, gPVBackground, gPFBackground, gTvumeter_background, gTvumeter_peak_on, gTvumeter_peak_off, gTvumeter_needle, gTvumeter_black, gTvumeter_frame, gPFSBackground)
 
 #define RSID_POINTS 1
 
 void dumpState() {
 
-//    debugF("@@@@@ yrot: ", State->yRotation);
+//    debugF("@@@@@ yrot: ", gyRotation);
 
 }
 
 
-int main(int launchID) {
+int root(int launchID) {
 
     int i;
+
+    // Draw the visualizer.
+    bindProgramVertex(gPVBackground);
+    bindProgramFragment(gPFBackground);
+    bindProgramFragmentStore(gPFSBackground);
 
     float mat1[16];
     float scale = 0.0041;
@@ -38,7 +61,7 @@ int main(int launchID) {
     vpLoadModelMatrix(mat1);
 
     // draw the background image (416x233)
-    bindTexture(NAMED_PFBackground, 0, NAMED_Tvumeter_background);
+    bindTexture(gPFBackground, 0, gTvumeter_background);
     drawQuadTexCoords(
             -208.0f, -33.0f, 0.0f,        // space
                 0.09375f, 0.9551f,        // texture
@@ -50,10 +73,10 @@ int main(int launchID) {
                 0.09375f, 0.0449f);       // texture
 
     // draw the peak indicator light (56x58)
-    if (State->mPeak > 0) {
-        bindTexture(NAMED_PFBackground, 0, NAMED_Tvumeter_peak_on);
+    if (gPeak > 0) {
+        bindTexture(gPFBackground, 0, gTvumeter_peak_on);
     } else {
-        bindTexture(NAMED_PFBackground, 0, NAMED_Tvumeter_peak_off);
+        bindTexture(gPFBackground, 0, gTvumeter_peak_off);
     }
     drawQuadTexCoords(
             140.0f, 70.0f, -1.0f,         // space
@@ -71,10 +94,10 @@ int main(int launchID) {
 
     // set matrix so point of rotation becomes origin
     matrixLoadTranslate(mat1, 0.f, -57.0f * scale, 0.f);
-    matrixRotate(mat1, State->mAngle - 90.f, 0.f, 0.f, 1.f);
+    matrixRotate(mat1, gAngle - 90.f, 0.f, 0.f, 1.f);
     matrixScale(mat1, scale, scale, scale);
     vpLoadModelMatrix(mat1);
-    bindTexture(NAMED_PFBackground, 0, NAMED_Tvumeter_needle);
+    bindTexture(gPFBackground, 0, gTvumeter_needle);
     drawQuadTexCoords(
             -44.0f, -102.0f+57.f, 0.0f,         // space
                 .15625f, 0.755859375f,  // texture
@@ -92,7 +115,7 @@ int main(int launchID) {
     vpLoadModelMatrix(mat1);
 
     // erase the part of the needle we don't want to show
-    bindTexture(NAMED_PFBackground, 0, NAMED_Tvumeter_black);
+    bindTexture(gPFBackground, 0, gTvumeter_black);
     drawQuad(-100.f, -55.f, 0.f,
              -100.f, -105.f, 0.f,
               100.f, -105.f, 0.f,
@@ -100,7 +123,7 @@ int main(int launchID) {
 
 
     // draw the frame (472x290)
-    bindTexture(NAMED_PFBackground, 0, NAMED_Tvumeter_frame);
+    bindTexture(gPFBackground, 0, gTvumeter_frame);
     drawQuadTexCoords(
             -236.0f, -60.0f, 0.0f,           // space
                 0.0390625f, 0.783203125f,    // texture

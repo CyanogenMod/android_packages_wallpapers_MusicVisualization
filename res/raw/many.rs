@@ -13,9 +13,47 @@
 // limitations under the License.
 
 #pragma version(1)
-#pragma stateVertex(PVBackground)
-#pragma stateRaster(parent)
-#pragma stateStore(PFSBackground)
+
+#include "../../../../../frameworks/base/libs/rs/scriptc/rs_types.rsh"
+#include "../../../../../frameworks/base/libs/rs/scriptc/rs_math.rsh"
+#include "../../../../../frameworks/base/libs/rs/scriptc/rs_graphics.rsh"
+
+float gAngle;
+int   gPeak;
+float gRotate;
+float gTilt;
+int   gIdle;
+int   gWaveCounter;
+
+rs_program_vertex gPVBackground;
+rs_program_fragment gPFBackgroundMip;
+rs_program_fragment gPFBackgroundNoMip;
+
+rs_allocation gTvumeter_background;
+rs_allocation gTvumeter_peak_on;
+rs_allocation gTvumeter_peak_off;
+rs_allocation gTvumeter_needle;
+rs_allocation gTvumeter_black;
+rs_allocation gTvumeter_frame;
+rs_allocation gTvumeter_album;
+
+rs_program_store gPFSBackground;
+
+typedef struct Vertex_s {
+    float x;
+    float y;
+    float s;
+    float t;
+} Vertex_t;
+Vertex_t *gPoints;
+
+
+rs_allocation gPointBuffer;
+rs_allocation gTlinetexture;
+rs_mesh gCubeMesh;
+
+#pragma rs export_var(gAngle, gPeak, gRotate, gTilt, gIdle, gWaveCounter, gPVBackground, gPFBackgroundMip, gPFBackgroundNoMip, gTvumeter_background, gTvumeter_peak_on, gTvumeter_peak_off, gTvumeter_needle, gTvumeter_black, gTvumeter_frame, gTvumeter_album, gPFSBackground, gPoints, gPointBuffer, gTlinetexture, gCubeMesh)
+
 
 #define RSID_POINTS 1
 
@@ -38,10 +76,11 @@ void drawVU(float* ident) {
     matrixScale(mat1, scale, scale, scale);
     vpLoadModelMatrix(mat1);
 
-    bindProgramFragment(NAMED_PFBackgroundMip);
+    bindProgramFragment(gPFBackgroundMip);
+    bindProgramFragmentStore(gPFSBackground);
 
     // draw the background image (416x233)
-    bindTexture(NAMED_PFBackgroundMip, 0, NAMED_Tvumeter_background);
+    bindTexture(gPFBackgroundMip, 0, gTvumeter_background);
     drawQuadTexCoords(
             -208.0f, -33.0f, 600.0f,        // space
                 0.09375f, 0.9551f,        // texture
@@ -53,10 +92,10 @@ void drawVU(float* ident) {
                 0.09375f, 0.0449f);       // texture
 
     // draw the peak indicator light (56x58)
-    if (State->mPeak > 0) {
-        bindTexture(NAMED_PFBackgroundMip, 0, NAMED_Tvumeter_peak_on);
+    if (gPeak > 0) {
+        bindTexture(gPFBackgroundMip, 0, gTvumeter_peak_on);
     } else {
-        bindTexture(NAMED_PFBackgroundMip, 0, NAMED_Tvumeter_peak_off);
+        bindTexture(gPFBackgroundMip, 0, gTvumeter_peak_off);
     }
     drawQuadTexCoords(
             140.0f, 70.0f, 600.0f,         // space
@@ -75,10 +114,10 @@ void drawVU(float* ident) {
     // set matrix so point of rotation becomes origin
     matrixLoadMat(mat1,ident);
     matrixTranslate(mat1, 0.f, -57.0f * scale, 0.f);
-    matrixRotate(mat1, State->mAngle - 90.f, 0.f, 0.f, 1.f);
+    matrixRotate(mat1, gAngle - 90.f, 0.f, 0.f, 1.f);
     matrixScale(mat1, scale, scale, scale);
     vpLoadModelMatrix(mat1);
-    bindTexture(NAMED_PFBackgroundMip, 0, NAMED_Tvumeter_needle);
+    bindTexture(gPFBackgroundMip, 0, gTvumeter_needle);
     drawQuadTexCoords(
             -44.0f, -102.0f+57.f, 600.0f,         // space
                 .15625f, 0.755859375f,  // texture
@@ -97,7 +136,7 @@ void drawVU(float* ident) {
     vpLoadModelMatrix(mat1);
 
     // erase the part of the needle we don't want to show
-    bindTexture(NAMED_PFBackgroundMip, 0, NAMED_Tvumeter_black);
+    bindTexture(gPFBackgroundMip, 0, gTvumeter_black);
     drawQuad(-100.f, -55.f, 600.f,
              -100.f, -105.f, 600.f,
               100.f, -105.f, 600.f,
@@ -105,7 +144,7 @@ void drawVU(float* ident) {
 
 
     // draw the frame (472x290)
-    bindTexture(NAMED_PFBackgroundMip, 0, NAMED_Tvumeter_frame);
+    bindTexture(gPFBackgroundMip, 0, gTvumeter_frame);
     drawQuadTexCoords(
             -236.0f, -60.0f, 600.0f,           // space
                 0.0390625f, 0.783203125f,    // texture
@@ -141,15 +180,15 @@ float autorotation = 0;
 void makeIdleWave(float *points) {
     int i;
     // show a number of superimposed moving sinewaves
-    float amp1 = sinf(0.007 * wave1amp) * 120 * 1024;
-    float amp2 = sinf(0.023 * wave2amp) * 80 * 1024;
-    float amp3 = sinf(0.011 * wave3amp) * 40 * 1024;
-    float amp4 = sinf(0.031 * wave4amp) * 20 * 1024;
+    float amp1 = sin(0.007f * wave1amp) * 120 * 1024;
+    float amp2 = sin(0.023f * wave2amp) * 80 * 1024;
+    float amp3 = sin(0.011f * wave3amp) * 40 * 1024;
+    float amp4 = sin(0.031f * wave4amp) * 20 * 1024;
     for (i = 0; i < 256; i++) {
-        float val = sinf(0.013 * (wave1pos + i * 4)) * amp1
-                  + sinf(0.029 * (wave2pos + i * 4)) * amp2;
-        float off = sinf(0.005 * (wave3pos + i * 4)) * amp3
-                  + sinf(0.017 * (wave4pos + i * 4)) * amp4;
+        float val = sin(0.013f * (wave1pos + i * 4)) * amp1
+                  + sin(0.029f * (wave2pos + i * 4)) * amp2;
+        float off = sin(0.005f * (wave3pos + i * 4)) * amp3
+                  + sin(0.017f * (wave4pos + i * 4)) * amp4;
         if (val < 2.f && val > -2.f) val = 2.f;
         points[i*8+1] = val + off;
         points[i*8+5] = -val + off;
@@ -166,14 +205,14 @@ void drawWave(float *ident) {
     vpLoadModelMatrix(mat1);
     int i;
 
-    if (State->mIdle) {
+    if (gIdle) {
 
         // idle state animation
-        float *points = loadArrayF(RSID_POINTS, 0);
+        float *points = (float*)gPoints;
         if (fadeoutcounter > 0) {
             // fade waveform to 0
             for (i = 0; i < 256; i++) {
-                float val = absf(points[i*8+1]);
+                float val = fabs(points[i*8+1]);
                 val = val * FADEOUT_FACTOR;
                 if (val < 2.f) val = 2.f;
                 points[i*8+1] = val;
@@ -195,11 +234,11 @@ void drawWave(float *ident) {
         if (fadeincounter > 0 && fadeoutcounter == 0) {
             // morph from idle animation back to waveform
             makeIdleWave(idle);
-            if (waveCounter != State->mWaveCounter) {
-                waveCounter = State->mWaveCounter;
-                float *points = loadArrayF(RSID_POINTS, 0);
+            if (waveCounter != gWaveCounter) {
+                waveCounter = gWaveCounter;
+                float *points = (float*)gPoints;
                 for (i = 0; i < 256; i++) {
-                    float val = absf(points[i*8+1]);
+                    float val = fabs(points[i*8+1]);
                     points[i*8+1] = (val * (FADEIN_LENGTH - fadeincounter) + idle[i*8+1] * fadeincounter) / FADEIN_LENGTH;
                     points[i*8+5] = (-val * (FADEIN_LENGTH - fadeincounter) + idle[i*8+5] * fadeincounter) / FADEIN_LENGTH;
                 }
@@ -213,10 +252,10 @@ void drawWave(float *ident) {
         }
     }
 
-    uploadToBufferObject(NAMED_PointBuffer);
-    bindProgramFragment(NAMED_PFBackgroundNoMip);
-    bindTexture(NAMED_PFBackgroundNoMip, 0, NAMED_Tlinetexture);
-    drawSimpleMesh(NAMED_CubeMesh);
+    uploadToBufferObject(gPointBuffer);
+    bindProgramFragment(gPFBackgroundNoMip);
+    bindTexture(gPFBackgroundNoMip, 0, gTlinetexture);
+    drawSimpleMesh(gCubeMesh);
 }
 
 
@@ -236,7 +275,9 @@ void drawVizLayer(float *ident) {
 }
 
 
-int main(int launchID) {
+int root(int launchID) {
+
+    bindProgramVertex(gPVBackground);
 
     int i;
     float ident[16];
@@ -254,8 +295,8 @@ int main(int launchID) {
     while (autorotation > 360.f) autorotation -= 360.f;
 
     matrixLoadIdentity(ident);
-    matrixRotate(ident, State->mTilt, 1.f, 0.f, 0.f);
-    matrixRotate(ident, autorotation + State->mRotate, 0.f, 1.f, 0.f);
+    matrixRotate(ident, gTilt, 1.f, 0.f, 0.f);
+    matrixRotate(ident, autorotation + gRotate, 0.f, 1.f, 0.f);
 
     // draw the reflections
     matrixTranslate(ident, 0.f, -1.f, 0.f);
@@ -263,8 +304,8 @@ int main(int launchID) {
     drawVizLayer(ident);
 
     // draw the reflecting plane
-    bindProgramFragment(NAMED_PFBackgroundMip);
-    bindTexture(NAMED_PFBackgroundMip, 0, NAMED_Tvumeter_album);
+    bindProgramFragment(gPFBackgroundMip);
+    bindTexture(gPFBackgroundMip, 0, gTvumeter_album);
     drawQuadTexCoords(
             -1500.0f, -60.0f, 1500.0f,           // space
                 0.f, 1.f,    // texture

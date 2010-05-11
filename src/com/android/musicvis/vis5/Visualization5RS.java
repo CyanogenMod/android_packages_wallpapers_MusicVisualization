@@ -18,6 +18,7 @@ package com.android.musicvis.vis5;
 
 import com.android.musicvis.R;
 import com.android.musicvis.RenderScriptScene;
+import com.android.musicvis.ScriptField_Vertex;
 
 import android.media.MediaPlayer;
 import android.os.Handler;
@@ -65,8 +66,9 @@ class Visualization5RS extends RenderScriptScene {
         public int   mWaveCounter;
     }
     WorldState mWorldState = new WorldState();
-    private Type mStateType;
-    private Allocation mState;
+
+    ScriptC_Many mScript;
+    private ScriptField_Vertex mVertexBuffer;
 
     private ProgramStore mPfsBackground;
     private ProgramFragment mPfBackgroundMip;
@@ -124,7 +126,7 @@ class Visualization5RS extends RenderScriptScene {
         mWorldState.mTilt = -20;
     }
 
-    @Override
+    /*@Override
     public void onTouchEvent(MotionEvent event) {
         switch(event.getAction()) {
             case MotionEvent.ACTION_DOWN:
@@ -142,26 +144,20 @@ class Visualization5RS extends RenderScriptScene {
                 }
                 mWorldState.mTilt = dy;
                 mState.data(mWorldState);
+                //updateWorldState();
         }
-    }
+    }*/
 
     @Override
-    public void setOffset(float xOffset, float yOffset,
-            float xStep, float yStep, int xPixels, int yPixels) {
+    public void setOffset(float xOffset, float yOffset, int xPixels, int yPixels) {
         // update our state, then push it to the renderscript
         mWorldState.mRotate = (xOffset - 0.5f) * 90;
-        mState.data(mWorldState);
+        updateWorldState();
     }
 
     @Override
     protected ScriptC createScript() {
-/*
-        // Create a renderscript type from a java class. The specified name doesn't
-        // really matter; the name by which we refer to the object in RenderScript
-        // will be specified later.
-        mStateType = Type.createFromClass(mRS, WorldState.class, 1, "WorldState");
-        // Create an allocation from the type we just created.
-        mState = Allocation.createTyped(mRS, mStateType);
+        mScript = new ScriptC_Many(mRS, mResources, R.raw.many_bc, true);
 
         // First set up the coordinate system and such
         ProgramVertex.Builder pvb = new ProgramVertex.Builder(mRS, null, null);
@@ -171,23 +167,33 @@ class Visualization5RS extends RenderScriptScene {
         mPVBackground.bindAllocation(mPVAlloc);
         mPVAlloc.setupProjectionNormalized(mWidth, mHeight);
 
+        mScript.set_gPVBackground(mPVBackground);
+
         mTextures = new Allocation[8];
         mTextures[0] = Allocation.createFromBitmapResourceBoxed(mRS, mResources, R.drawable.background, Element.RGBA_8888(mRS), true);
         mTextures[0].setName("Tvumeter_background");
+        mScript.set_gTvumeter_background(mTextures[0]);
         mTextures[1] = Allocation.createFromBitmapResourceBoxed(mRS, mResources, R.drawable.frame, Element.RGBA_8888(mRS), true);
         mTextures[1].setName("Tvumeter_frame");
+        mScript.set_gTvumeter_frame(mTextures[1]);
         mTextures[2] = Allocation.createFromBitmapResourceBoxed(mRS, mResources, R.drawable.peak_on, Element.RGBA_8888(mRS), true);
         mTextures[2].setName("Tvumeter_peak_on");
+        mScript.set_gTvumeter_peak_on(mTextures[2]);
         mTextures[3] = Allocation.createFromBitmapResourceBoxed(mRS, mResources, R.drawable.peak_off, Element.RGBA_8888(mRS), true);
         mTextures[3].setName("Tvumeter_peak_off");
+        mScript.set_gTvumeter_peak_off(mTextures[3]);
         mTextures[4] = Allocation.createFromBitmapResourceBoxed(mRS, mResources, R.drawable.needle, Element.RGBA_8888(mRS), true);
         mTextures[4].setName("Tvumeter_needle");
-        mTextures[5] = Allocation.createFromBitmapResourceBoxed(mRS, mResources, R.drawable.black, Element.RGB_565(mRS), false);
+        mScript.set_gTvumeter_needle(mTextures[4]);
+        mTextures[5] = Allocation.createFromBitmapResourceBoxed(mRS, mResources, R.drawable.black, Element.RGB_565(mRS), true);
         mTextures[5].setName("Tvumeter_black");
+        mScript.set_gTvumeter_black(mTextures[5]);
         mTextures[6] = Allocation.createFromBitmapResource(mRS, mResources, R.drawable.albumart, Element.RGBA_8888(mRS), true);
         mTextures[6].setName("Tvumeter_album");
+        mScript.set_gTvumeter_album(mTextures[6]);
         mTextures[7] = Allocation.createFromBitmapResource(mRS, mResources, R.drawable.fire, Element.RGB_565(mRS), false);
         mTextures[7].setName("Tlinetexture");
+        mScript.set_gTlinetexture(mTextures[7]);
 
         final int count = mTextures.length;
         for (int i = 0; i < count; i++) {
@@ -219,6 +225,7 @@ class Visualization5RS extends RenderScriptScene {
             mPfBackgroundNoMip = builder.create();
             mPfBackgroundNoMip.setName("PFBackgroundNoMip");
             mPfBackgroundNoMip.bindSampler(mSamplerNoMip, 0);
+            mScript.set_gPFBackgroundNoMip(mPfBackgroundNoMip);
         }
 
         {
@@ -228,6 +235,7 @@ class Visualization5RS extends RenderScriptScene {
             mPfBackgroundMip = builder.create();
             mPfBackgroundMip.setName("PFBackgroundMip");
             mPfBackgroundMip.bindSampler(mSamplerMip, 0);
+            mScript.set_gPFBackgroundMip(mPfBackgroundMip);
         }
 
         {
@@ -239,17 +247,16 @@ class Visualization5RS extends RenderScriptScene {
             builder.setDepthMask(false);
             mPfsBackground = builder.create();
             mPfsBackground.setName("PFSBackground");
+
+            mScript.set_gPFSBackground(mPfsBackground);
         }
 
         // Start creating the mesh
         final SimpleMesh.Builder meshBuilder = new SimpleMesh.Builder(mRS);
 
-        // Create the Element for the points
-        Builder elementBuilder = new Builder(mRS);
-        elementBuilder.add(Element.ATTRIB_POSITION_2(mRS), "position");
-        elementBuilder.add(Element.ATTRIB_TEXTURE_2(mRS), "texture");
-        final Element vertexElement = elementBuilder.create();
-        final int vertexSlot = meshBuilder.addVertexType(vertexElement, mPointData.length / 4);
+        mVertexBuffer = new ScriptField_Vertex(mRS, mPointData.length / 4);
+
+        final int vertexSlot = meshBuilder.addVertexType(mVertexBuffer.getType());
         // Specify the type and number of indices we need. We'll allocate them later.
         meshBuilder.setIndexType(Element.INDEX_16(mRS), mIndexData.length);
         // This will be a line mesh
@@ -258,8 +265,16 @@ class Visualization5RS extends RenderScriptScene {
         // Create the Allocation for the vertices
         mCubeMesh = meshBuilder.create();
         mCubeMesh.setName("CubeMesh");
+
+        mCubeMesh.bindVertexAllocation(mVertexBuffer.getAllocation(), 0);
+
+        mPointAlloc = mVertexBuffer.getAllocation();
+
         mPointAlloc = mCubeMesh.createVertexAllocation(vertexSlot);
-        mPointAlloc.setName("PointBuffer");
+
+        mScript.bind_gPoints(mPointAlloc);
+        mScript.set_gPointBuffer(mPointAlloc);
+        mScript.set_gCubeMesh(mCubeMesh);
 
         // Create the Allocation for the indices
         mLineIdxAlloc = mCubeMesh.createIndexAllocation();
@@ -280,26 +295,9 @@ class Visualization5RS extends RenderScriptScene {
         mLineIdxAlloc.data(mIndexData);
         mLineIdxAlloc.uploadToBufferObject();
 
-        // Time to create the script
-        ScriptC.Builder sb = new ScriptC.Builder(mRS);
-        // Specify the name by which to refer to the WorldState object in the
-        // renderscript.
-        sb.setType(mStateType, "State", RSID_STATE);
-        sb.setScript(mResources, R.raw.many);
-        sb.setRoot(true);
+        mScript.setClearColor(0.0f, 0.0f, 0.0f, 1.0f);
 
-        ScriptC script = sb.create();
-        script.setClearColor(0.0f, 0.0f, 0.0f, 1.0f);
-        script.setTimeZone(TimeZone.getDefault().getID());
-
-        script.bindAllocation(mState, RSID_STATE);
-        script.bindAllocation(mPointAlloc, RSID_POINTS);
-        script.bindAllocation(mLineIdxAlloc, RSID_LINES);
-        script.bindAllocation(mPVAlloc.mAlloc, RSID_PROGRAMVERTEX);
-
-        return script;
-        */
-            return null;
+        return mScript;
     }
 
     @Override
@@ -400,7 +398,15 @@ class Visualization5RS extends RenderScriptScene {
             mWorldState.mWaveCounter++;
         }
 
-        mState.data(mWorldState);
+        updateWorldState();
     }
 
+    protected void updateWorldState() {
+        mScript.set_gAngle(mWorldState.mAngle);
+        mScript.set_gPeak(mWorldState.mPeak);
+        mScript.set_gRotate(mWorldState.mRotate);
+        mScript.set_gTilt(mWorldState.mTilt);
+        mScript.set_gIdle(mWorldState.mIdle);
+        mScript.set_gWaveCounter(mWorldState.mWaveCounter);
+    }
 }

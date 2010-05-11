@@ -17,9 +17,12 @@
 
 package com.android.musicvis;
 
+
 import android.service.wallpaper.WallpaperService;
+import android.os.Bundle;
 import android.renderscript.RenderScriptGL;
 import android.renderscript.RenderScript;
+import android.util.Log;
 import android.view.MotionEvent;
 import android.view.SurfaceHolder;
 import android.view.Surface;
@@ -38,7 +41,7 @@ public abstract class RenderScriptWallpaper<T extends RenderScriptScene> extends
         @Override
         public void onCreate(SurfaceHolder surfaceHolder) {
             super.onCreate(surfaceHolder);
-            setTouchEventsEnabled(true);
+            setTouchEventsEnabled(false);
             surfaceHolder.setSizeFromLayout();
         }
 
@@ -86,15 +89,15 @@ public abstract class RenderScriptWallpaper<T extends RenderScriptScene> extends
             }
         }
 
-        @Override
+        /*@Override
         public void onTouchEvent(MotionEvent event) {
             mRenderer.onTouchEvent(event);
-        }
+        }*/
 
         @Override
         public void onOffsetsChanged(float xOffset, float yOffset,
                 float xStep, float yStep, int xPixels, int yPixels) {
-            mRenderer.setOffset(xOffset, yOffset, xStep, yStep, xPixels, yPixels);
+            mRenderer.setOffset(xOffset, yOffset, xPixels, yPixels);
         }
 
         @Override
@@ -114,5 +117,12 @@ public abstract class RenderScriptWallpaper<T extends RenderScriptScene> extends
             super.onSurfaceDestroyed(holder);
             destroyRenderer();
         }
+
+        @Override
+        public Bundle onCommand(String action, int x, int y, int z,
+                Bundle extras, boolean resultRequested) {
+            return mRenderer.onCommand(action, x, y, z, extras, resultRequested);
+        }
+
     }
 }

@@ -13,9 +13,33 @@
 // limitations under the License.
 
 #pragma version(1)
-#pragma stateVertex(PVBackground)
-#pragma stateRaster(parent)
-#pragma stateFragment(PFBackground)
+
+#include "../../../../../frameworks/base/libs/rs/scriptc/rs_types.rsh"
+#include "../../../../../frameworks/base/libs/rs/scriptc/rs_math.rsh"
+#include "../../../../../frameworks/base/libs/rs/scriptc/rs_graphics.rsh"
+
+float gYRotation;
+int gIdle;
+int gWaveCounter;
+int gWidth;
+
+rs_program_vertex gPVBackground;
+rs_program_fragment gPFBackground;
+
+typedef struct Vertex_s {
+    float x;
+    float y;
+    float s;
+    float t;
+} Vertex_t;
+Vertex_t *gPoints;
+
+
+rs_allocation gPointBuffer;
+rs_allocation gTlinetexture;
+rs_mesh gCubeMesh;
+
+#pragma rs export_var(gYRotation, gIdle, gWaveCounter, gWidth, gPVBackground, gPFBackground, gPoints, gPointBuffer, gTlinetexture, gCubeMesh)
 
 #define RSID_POINTS 1
 
@@ -38,19 +62,20 @@ int waveCounter = 0;
 
 void makeIdleWave(float *points) {
     int i;
+
     // show a number of superimposed moving sinewaves
-    float amp1 = sinf(0.007 * wave1amp) * 120;
-    float amp2 = sinf(0.023 * wave2amp) * 80;
-    float amp3 = sinf(0.011 * wave3amp) * 40;
-    float amp4 = sinf(0.031 * wave4amp) * 20;
+    float amp1 = sin(0.007f * wave1amp) * 120;
+    float amp2 = sin(0.023f * wave2amp) * 80;
+    float amp3 = sin(0.011f * wave3amp) * 40;
+    float amp4 = sin(0.031f * wave4amp) * 20;
     // calculate how many invisible lines there are on each side
-    int skip = (1024 - State->width) / 2;
+    int skip = (1024 - gWidth) / 2;
     int end = 1024 - skip;
     for (i = skip; i < end; i++) {
-        float val = sinf(0.013 * (wave1pos + i)) * amp1
-                  + sinf(0.029 * (wave2pos + i)) * amp2;
-        float off = sinf(0.005 * (wave3pos + i)) * amp3
-                  + sinf(0.017 * (wave4pos + i)) * amp4;
+        float val = sin(0.013f * (wave1pos + i)) * amp1
+                  + sin(0.029f * (wave2pos + i)) * amp2;
+        float off = sin(0.005f * (wave3pos + i)) * amp3
+                  + sin(0.017f * (wave4pos + i)) * amp4;
         if (val < 2.f && val > -2.f) val = 2.f;
         points[i*8+1] = val + off;
         points[i*8+5] = -val + off;
@@ -65,23 +90,23 @@ void makeIdleWave(float *points) {
     wave4amp++;
 }
 
-int main(int launchID) {
+int root(int launchID) {
 
     int i;
 
     // calculate how many invisible lines there are on each side
-    int width = State->width;
+    int width = gWidth;
     int skip = (1024 - width) / 2;
     int end = 1024 - skip;
 
-    if (State->idle) {
+    if (gIdle) {
 
         // idle state animation
-        float *points = loadArrayF(RSID_POINTS, 0);
+        float *points = (float*)gPoints;
         if (fadeoutcounter > 0) {
             // fade waveform to 0
             for (i = skip; i < end; i++) {
-                float val = absf(points[i*8+1]);
+                float val = fabs(points[i*8+1]);
                 val = val * FADEOUT_FACTOR;
                 if (val < 2.f) val = 2.f;
                 points[i*8+1] = val;
@@ -103,11 +128,11 @@ int main(int launchID) {
         if (fadeincounter > 0 && fadeoutcounter == 0) {
             // morph from idle animation back to waveform
             makeIdleWave(idle);
-            if (waveCounter != State->waveCounter) {
-                waveCounter = State->waveCounter;
-                float *points = loadArrayF(RSID_POINTS, 0);
+            if (waveCounter != gWaveCounter) {
+                waveCounter = gWaveCounter;
+                float *points = (float*)gPoints;
                 for (i = skip; i < end; i++) {
-                    float val = absf(points[i*8+1]);
+                    float val = fabs(points[i*8+1]);
                     points[i*8+1] = (val * (FADEIN_LENGTH - fadeincounter) + idle[i*8+1] * fadeincounter) / FADEIN_LENGTH;
                     points[i*8+5] = (-val * (FADEIN_LENGTH - fadeincounter) + idle[i*8+5] * fadeincounter) / FADEIN_LENGTH;
                 }
@@ -122,19 +147,24 @@ int main(int launchID) {
     }
 
     float mat1[16];
-    float yrot = State->yRotation;
-    float scale = 0.004165f * (1.0f + 2.f * absf(sinf(radf(yrot))));
+    float yrot = gYRotation;
+    float scale = 0.004165f * (1.0f + 2.f * fabs(sin(radians(yrot))));
+
+    // Draw the visualizer.
+    bindProgramVertex(gPVBackground);
+    bindProgramFragment(gPFBackground);
+    uploadToBufferObject(gPointBuffer);
+    bindTexture(gPFBackground, 0, gTlinetexture);
 
     // Change the model matrix to account for the large model
     // and to do the necessary rotations.
-    matrixLoadRotate(mat1, yrot, 0.f, 0.f, 1.f);
+    matrixLoadIdentity(mat1);
+    matrixRotate(mat1, yrot, 0.f, 0.f, 1.f);
     matrixScale(mat1, scale, scale, scale);
     vpLoadModelMatrix(mat1);
 
-    // Draw the visualizer.
-    uploadToBufferObject(NAMED_PointBuffer);
-    bindTexture(NAMED_PFBackground, 0, NAMED_Tlinetexture);
-    drawSimpleMeshRange(NAMED_CubeMesh, skip * 2, width * 2);
+    drawSimpleMeshRange(gCubeMesh, skip * 2, width * 2);
 
     return 1;
 }
+

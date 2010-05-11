@@ -41,20 +41,17 @@ class Visualization3RS extends GenericWaveRS {
 
     private short [] mAnalyzer = new short[256];
 
+    float lastOffset;
+
     Visualization3RS(int width, int height) {
         super(width, height, R.drawable.ice);
+        lastOffset = 0;
     }
 
     @Override
-    public void setOffset(float xOffset, float yOffset,
-            float xStep, float yStep, int xPixels, int yPixels) {
-        // update our state, then push it to the renderscript
-        if (xStep <= 0.0f) {
-            xStep = xOffset / 2; // originator didn't set step size, assume we're halfway
-        }
-        // rotate 360 degrees per screen
-        mWorldState.yRotation = xStep == 0.f ? 0.f : (xOffset / xStep) * 360;
-        mState.data(mWorldState);
+    public void setOffset(float xOffset, float yOffset, int xPixels, int yPixels) {
+        mWorldState.yRotation = (xOffset * 4) * 360;
+        updateWorldState();
     }
 
     @Override
@@ -65,13 +62,13 @@ class Visualization3RS extends GenericWaveRS {
         if (len == 0) {
             if (mWorldState.idle == 0) {
                 mWorldState.idle = 1;
-                mState.data(mWorldState);
+                updateWorldState();
             }
             return;
-        }   
+        }
         if (mWorldState.idle != 0) {
             mWorldState.idle = 0;
-            mState.data(mWorldState);
+            updateWorldState();
         }
 
         // We always get 256 points

@@ -26,7 +26,7 @@ class Visualization2RS extends GenericWaveRS {
     Visualization2RS(int width, int height) {
         super(width, height, R.drawable.fire);
     }
-    
+
     @Override
     public void update() {
 
@@ -34,17 +34,19 @@ class Visualization2RS extends GenericWaveRS {
 
         int outlen = mPointData.length / 8;
         if (len > outlen) len = outlen;
-        
+
         if (len == 0) {
             if (mWorldState.idle == 0) {
                 mWorldState.idle = 1;
-                mState.data(mWorldState);
+                //mState.data(mWorldState);
+                updateWorldState();
             }
             return;
-        }   
+        }
         if (mWorldState.idle != 0) {
             mWorldState.idle = 0;
-            mState.data(mWorldState);
+            //mState.data(mWorldState);
+            updateWorldState();
         }
         // TODO: might be more efficient to push this in to renderscript
         for(int i = 0; i < len; i++) {

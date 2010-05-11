@@ -55,8 +55,10 @@ public class GenericWaveRS extends RenderScriptScene {
         public int width;
     }
     protected WorldState mWorldState = new WorldState();
-    private Type mStateType;
-    protected Allocation mState;
+
+    ScriptC_Waveform mScript;
+
+    private ScriptField_Vertex mVertexBuffer;
 
     private SimpleMesh mCubeMesh;
 
@@ -113,17 +115,19 @@ public class GenericWaveRS extends RenderScriptScene {
 
     @Override
     protected ScriptC createScript() {
-/*
+
+        mScript = new ScriptC_Waveform(mRS, mResources, R.raw.waveform_bc, true);
+
         // Create a renderscript type from a java class. The specified name doesn't
         // really matter; the name by which we refer to the object in RenderScript
         // will be specified later.
-        mStateType = Type.createFromClass(mRS, WorldState.class, 1, "WorldState");
+        //mStateType = Type.createFromClass(mRS, WorldState.class, 1, "WorldState");
         // Create an allocation from the type we just created.
-        mState = Allocation.createTyped(mRS, mStateType);
+        //mState = Allocation.createTyped(mRS, mStateType);
         // set our java object as the data for the renderscript allocation
         mWorldState.yRotation = 0.0f;
         mWorldState.width = mWidth;
-        mState.data(mWorldState);
+        updateWorldState();
 
         //  Now put our model in to a form that renderscript can work with:
         //  - create a buffer of floats that are the coordinates for the points that define the cube
@@ -138,15 +142,14 @@ public class GenericWaveRS extends RenderScriptScene {
         mPVBackground.bindAllocation(mPVAlloc);
         mPVAlloc.setupProjectionNormalized(mWidth, mHeight);
 
+        mScript.set_gPVBackground(mPVBackground);
+
         // Start creating the mesh
         final SimpleMesh.Builder meshBuilder = new SimpleMesh.Builder(mRS);
 
-        // Create the Element for the points
-        Builder elementBuilder = new Builder(mRS);
-        elementBuilder.add(Element.ATTRIB_POSITION_2(mRS), "position");
-        elementBuilder.add(Element.ATTRIB_TEXTURE_2(mRS), "texture");
-        final Element vertexElement = elementBuilder.create();
-        final int vertexSlot = meshBuilder.addVertexType(vertexElement, mPointData.length / 4);
+        mVertexBuffer = new ScriptField_Vertex(mRS, mPointData.length / 4);
+
+        final int vertexSlot = meshBuilder.addVertexType(mVertexBuffer.getType());
         // Specify the type and number of indices we need. We'll allocate them later.
         meshBuilder.setIndexType(Element.INDEX_16(mRS), mIndexData.length);
         // This will be a line mesh
@@ -155,8 +158,14 @@ public class GenericWaveRS extends RenderScriptScene {
         // Create the Allocation for the vertices
         mCubeMesh = meshBuilder.create();
         mCubeMesh.setName("CubeMesh");
-        mPointAlloc = mCubeMesh.createVertexAllocation(vertexSlot);
-        mPointAlloc.setName("PointBuffer");
+
+        mCubeMesh.bindVertexAllocation(mVertexBuffer.getAllocation(), 0);
+
+        mPointAlloc = mVertexBuffer.getAllocation();
+
+        mScript.bind_gPoints(mPointAlloc);
+        mScript.set_gPointBuffer(mPointAlloc);
+        mScript.set_gCubeMesh(mCubeMesh);
 
         // Create the Allocation for the indices
         mLineIdxAlloc = mCubeMesh.createIndexAllocation();
@@ -182,7 +191,11 @@ public class GenericWaveRS extends RenderScriptScene {
         mTexture.setName("Tlinetexture");
         mTexture.uploadToTexture(0);
 
-        // create a program fragment to use the texture
+        mScript.set_gTlinetexture(mTexture);
+
+        /*
+         * create a program fragment to use the texture
+         */
         Sampler.Builder samplerBuilder = new Sampler.Builder(mRS);
         samplerBuilder.setMin(LINEAR);
         samplerBuilder.setMag(LINEAR);
@@ -197,42 +210,15 @@ public class GenericWaveRS extends RenderScriptScene {
         mPfBackground.setName("PFBackground");
         mPfBackground.bindSampler(mSampler, 0);
 
-        // Time to create the script
-        ScriptC.Builder sb = new ScriptC.Builder(mRS);
-        // Specify the name by which to refer to the WorldState object in the
-        // renderscript.
-        sb.setType(mStateType, "State", RSID_STATE);
-        sb.setType(mCubeMesh.getVertexType(0), "Points", RSID_POINTS);
-        // this crashes when uncommented
-        //sb.setType(mCubeMesh.getIndexType(), "Lines", RSID_LINES);
-        sb.setScript(mResources, R.raw.waveform);
-        sb.setRoot(true);
+        mScript.set_gPFBackground(mPfBackground);
 
-        ScriptC script = sb.create();
-        script.setClearColor(0.0f, 0.0f, 0.0f, 1.0f);
-        script.setTimeZone(TimeZone.getDefault().getID());
-
-        script.bindAllocation(mState, RSID_STATE);
-        script.bindAllocation(mPointAlloc, RSID_POINTS);
-        script.bindAllocation(mLineIdxAlloc, RSID_LINES);
-        script.bindAllocation(mPVAlloc.mAlloc, RSID_PROGRAMVERTEX);
-
-        return script;
-        */
-        return null;
+        return mScript;
     }
 
     @Override
-    public void setOffset(float xOffset, float yOffset,
-            float xStep, float yStep, int xPixels, int yPixels) {
-        // update our state, then push it to the renderscript
-
-        if (xStep <= 0.0f) {
-            xStep = xOffset / 2; // originator didn't set step size, assume we're halfway
-        }
-        // rotate 180 degrees per screen
-        mWorldState.yRotation = xStep == 0.f ? 0.f : (xOffset / xStep) * 180;
-        mState.data(mWorldState);
+    public void setOffset(float xOffset, float yOffset, int xPixels, int yPixels) {
+        mWorldState.yRotation = (xOffset * 4) * 180;
+        updateWorldState();
     }
 
     @Override
@@ -263,7 +249,14 @@ public class GenericWaveRS extends RenderScriptScene {
         mHandler.postDelayed(mDrawCube, 20);
         update();
         mWorldState.waveCounter++;
-        mState.data(mWorldState);
+        updateWorldState();
+    }
+
+    protected void updateWorldState() {
+        mScript.set_gYRotation(mWorldState.yRotation);
+        mScript.set_gIdle(mWorldState.idle);
+        mScript.set_gWaveCounter(mWorldState.waveCounter);
+        mScript.set_gWidth(mWorldState.width);
     }
 
 }

@@ -59,8 +59,8 @@ class Visualization4RS extends RenderScriptScene {
         public int   mPeak;
     }
     WorldState mWorldState = new WorldState();
-    private Type mStateType;
-    private Allocation mState;
+
+    ScriptC_VU mScript;
 
     private ProgramStore mPfsBackground;
     private ProgramFragment mPfBackground;
@@ -94,13 +94,8 @@ class Visualization4RS extends RenderScriptScene {
 
     @Override
     protected ScriptC createScript() {
-/*
-        // Create a renderscript type from a java class. The specified name doesn't
-        // really matter; the name by which we refer to the object in RenderScript
-        // will be specified later.
-        mStateType = Type.createFromClass(mRS, WorldState.class, 1, "WorldState");
-        // Create an allocation from the type we just created.
-        mState = Allocation.createTyped(mRS, mStateType);
+
+        mScript = new ScriptC_VU(mRS, mResources, R.raw.vu_bc, true);
 
         // First set up the coordinate system and such
         ProgramVertex.Builder pvb = new ProgramVertex.Builder(mRS, null, null);
@@ -110,21 +105,29 @@ class Visualization4RS extends RenderScriptScene {
         mPVBackground.bindAllocation(mPVAlloc);
         mPVAlloc.setupProjectionNormalized(mWidth, mHeight);
 
+        mScript.set_gPVBackground(mPVBackground);
+
         updateWave();
 
         mTextures = new Allocation[6];
         mTextures[0] = Allocation.createFromBitmapResourceBoxed(mRS, mResources, R.drawable.background, Element.RGBA_8888(mRS), false);
         mTextures[0].setName("Tvumeter_background");
+        mScript.set_gTvumeter_background(mTextures[0]);
         mTextures[1] = Allocation.createFromBitmapResourceBoxed(mRS, mResources, R.drawable.frame, Element.RGBA_8888(mRS), false);
         mTextures[1].setName("Tvumeter_frame");
+        mScript.set_gTvumeter_frame(mTextures[1]);
         mTextures[2] = Allocation.createFromBitmapResourceBoxed(mRS, mResources, R.drawable.peak_on, Element.RGBA_8888(mRS), false);
         mTextures[2].setName("Tvumeter_peak_on");
+        mScript.set_gTvumeter_peak_on(mTextures[2]);
         mTextures[3] = Allocation.createFromBitmapResourceBoxed(mRS, mResources, R.drawable.peak_off, Element.RGBA_8888(mRS), false);
         mTextures[3].setName("Tvumeter_peak_off");
+        mScript.set_gTvumeter_peak_off(mTextures[3]);
         mTextures[4] = Allocation.createFromBitmapResourceBoxed(mRS, mResources, R.drawable.needle, Element.RGBA_8888(mRS), false);
         mTextures[4].setName("Tvumeter_needle");
+        mScript.set_gTvumeter_needle(mTextures[4]);
         mTextures[5] = Allocation.createFromBitmapResourceBoxed(mRS, mResources, R.drawable.black, Element.RGB_565(mRS), false);
         mTextures[5].setName("Tvumeter_black");
+        mScript.set_gTvumeter_black(mTextures[5]);
 
         final int count = mTextures.length;
         for (int i = 0; i < count; i++) {
@@ -145,6 +148,8 @@ class Visualization4RS extends RenderScriptScene {
             mPfBackground = builder.create();
             mPfBackground.setName("PFBackground");
             mPfBackground.bindSampler(mSampler, 0);
+
+            mScript.set_gPFBackground(mPfBackground);
         }
 
         {
@@ -156,26 +161,13 @@ class Visualization4RS extends RenderScriptScene {
             builder.setDepthMask(false);
             mPfsBackground = builder.create();
             mPfsBackground.setName("PFSBackground");
+
+            mScript.set_gPFSBackground(mPfsBackground);
         }
 
-        // Time to create the script
-        ScriptC.Builder sb = new ScriptC.Builder(mRS);
-        // Specify the name by which to refer to the WorldState object in the
-        // renderscript.
-        sb.setType(mStateType, "State", RSID_STATE);
-        sb.setScript(mResources, R.raw.vu);
-        sb.setRoot(true);
+        mScript.setTimeZone(TimeZone.getDefault().getID());
 
-        ScriptC script = sb.create();
-        script.setClearColor(0.0f, 0.0f, 0.0f, 1.0f);
-        script.setTimeZone(TimeZone.getDefault().getID());
-
-        script.bindAllocation(mState, RSID_STATE);
-        script.bindAllocation(mPVAlloc.mAlloc, RSID_PROGRAMVERTEX);
-
-        return script;
-        */
-        return null;
+        return mScript;
     }
 
     @Override
@@ -252,7 +244,8 @@ class Visualization4RS extends RenderScriptScene {
         }
 
         mWorldState.mAngle = 131f - (mNeedlePos / 410f); // ~80 degree range
-        mState.data(mWorldState);
+        mScript.set_gAngle(mWorldState.mAngle);
+        mScript.set_gPeak(mWorldState.mPeak);
     }
 
 }
