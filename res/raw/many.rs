@@ -77,7 +77,7 @@ void drawVU(float* ident) {
     vpLoadModelMatrix(mat1);
 
     bindProgramFragment(gPFBackgroundMip);
-    bindProgramFragmentStore(gPFSBackground);
+    bindProgramStore(gPFSBackground);
 
     // draw the background image (416x233)
     bindTexture(gPFBackgroundMip, 0, gTvumeter_background);

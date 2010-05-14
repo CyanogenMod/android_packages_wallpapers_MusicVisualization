@@ -52,7 +52,7 @@ int root(int launchID) {
     // Draw the visualizer.
     bindProgramVertex(gPVBackground);
     bindProgramFragment(gPFBackground);
-    bindProgramFragmentStore(gPFSBackground);
+    bindProgramStore(gPFSBackground);
 
     float mat1[16];
     float scale = 0.0041;
