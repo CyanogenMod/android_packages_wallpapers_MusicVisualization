@@ -61,8 +61,6 @@ float idle[8192];
 int waveCounter = 0;
 
 void makeIdleWave(float *points) {
-    int i;
-
     // show a number of superimposed moving sinewaves
     float amp1 = sin(0.007f * wave1amp) * 120;
     float amp2 = sin(0.023f * wave2amp) * 80;
@@ -71,7 +69,7 @@ void makeIdleWave(float *points) {
     // calculate how many invisible lines there are on each side
     int skip = (1024 - gWidth) / 2;
     int end = 1024 - skip;
-    for (i = skip; i < end; i++) {
+    for (int i = skip; i < end; i++) {
         float val = sin(0.013f * (wave1pos + i)) * amp1
                   + sin(0.029f * (wave2pos + i)) * amp2;
         float off = sin(0.005f * (wave3pos + i)) * amp3
@@ -91,6 +89,7 @@ void makeIdleWave(float *points) {
 }
 
 int root(int launchID) {
+    rsgClearColor(0.f, 0.f, 0.f, 1.f);
 
     int i;
 
@@ -146,24 +145,24 @@ int root(int launchID) {
         }
     }
 
-    float mat1[16];
+    rs_matrix4x4 mat1;
     float yrot = gYRotation;
     float scale = 0.004165f * (1.0f + 2.f * fabs(sin(radians(yrot))));
 
     // Draw the visualizer.
-    bindProgramVertex(gPVBackground);
-    bindProgramFragment(gPFBackground);
-    uploadToBufferObject(gPointBuffer);
-    bindTexture(gPFBackground, 0, gTlinetexture);
+    rsgBindProgramVertex(gPVBackground);
+    rsgBindProgramFragment(gPFBackground);
+    rsgUploadToBufferObject(gPointBuffer);
+    rsgBindTexture(gPFBackground, 0, gTlinetexture);
 
     // Change the model matrix to account for the large model
     // and to do the necessary rotations.
-    matrixLoadIdentity(mat1);
-    matrixRotate(mat1, yrot, 0.f, 0.f, 1.f);
-    matrixScale(mat1, scale, scale, scale);
-    vpLoadModelMatrix(mat1);
+    rsMatrixLoadIdentity(&mat1);
+    rsMatrixRotate(&mat1, yrot, 0.f, 0.f, 1.f);
+    rsMatrixScale(&mat1, scale, scale, scale);
+    rsgProgramVertexLoadModelMatrix(&mat1);
 
-    drawSimpleMeshRange(gCubeMesh, skip * 2, width * 2);
+    rsgDrawSimpleMesh(gCubeMesh, skip * 2, width * 2);
 
     return 1;
 }

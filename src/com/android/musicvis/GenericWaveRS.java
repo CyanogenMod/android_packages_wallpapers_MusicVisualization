@@ -118,12 +118,6 @@ public class GenericWaveRS extends RenderScriptScene {
 
         mScript = new ScriptC_Waveform(mRS, mResources, R.raw.waveform_bc, true);
 
-        // Create a renderscript type from a java class. The specified name doesn't
-        // really matter; the name by which we refer to the object in RenderScript
-        // will be specified later.
-        //mStateType = Type.createFromClass(mRS, WorldState.class, 1, "WorldState");
-        // Create an allocation from the type we just created.
-        //mState = Allocation.createTyped(mRS, mStateType);
         // set our java object as the data for the renderscript allocation
         mWorldState.yRotation = 0.0f;
         mWorldState.width = mWidth;
@@ -137,7 +131,6 @@ public class GenericWaveRS extends RenderScriptScene {
         // First set up the coordinate system and such
         ProgramVertex.Builder pvb = new ProgramVertex.Builder(mRS, null, null);
         mPVBackground = pvb.create();
-        mPVBackground.setName("PVBackground");
         mPVAlloc = new ProgramVertex.MatrixAllocation(mRS);
         mPVBackground.bindAllocation(mPVAlloc);
         mPVAlloc.setupProjectionNormalized(mWidth, mHeight);
@@ -157,7 +150,6 @@ public class GenericWaveRS extends RenderScriptScene {
 
         // Create the Allocation for the vertices
         mCubeMesh = meshBuilder.create();
-        mCubeMesh.setName("CubeMesh");
 
         mCubeMesh.bindVertexAllocation(mVertexBuffer.getAllocation(), 0);
 
@@ -188,7 +180,6 @@ public class GenericWaveRS extends RenderScriptScene {
 
         // load the texture
         mTexture = Allocation.createFromBitmapResourceBoxed(mRS, mResources, mTexId, RGB_565(mRS), false);
-        mTexture.setName("Tlinetexture");
         mTexture.uploadToTexture(0);
 
         mScript.set_gTlinetexture(mTexture);
@@ -207,7 +198,6 @@ public class GenericWaveRS extends RenderScriptScene {
         builder.setTexture(ProgramFragment.Builder.EnvMode.REPLACE,
                            ProgramFragment.Builder.Format.RGBA, 0);
         mPfBackground = builder.create();
-        mPfBackground.setName("PFBackground");
         mPfBackground.bindSampler(mSampler, 0);
 
         mScript.set_gPFBackground(mPfBackground);

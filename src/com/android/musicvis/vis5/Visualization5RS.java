@@ -162,7 +162,6 @@ class Visualization5RS extends RenderScriptScene {
         // First set up the coordinate system and such
         ProgramVertex.Builder pvb = new ProgramVertex.Builder(mRS, null, null);
         mPVBackground = pvb.create();
-        mPVBackground.setName("PVBackground");
         mPVAlloc = new ProgramVertex.MatrixAllocation(mRS);
         mPVBackground.bindAllocation(mPVAlloc);
         mPVAlloc.setupProjectionNormalized(mWidth, mHeight);
@@ -171,28 +170,20 @@ class Visualization5RS extends RenderScriptScene {
 
         mTextures = new Allocation[8];
         mTextures[0] = Allocation.createFromBitmapResourceBoxed(mRS, mResources, R.drawable.background, Element.RGBA_8888(mRS), true);
-        mTextures[0].setName("Tvumeter_background");
         mScript.set_gTvumeter_background(mTextures[0]);
         mTextures[1] = Allocation.createFromBitmapResourceBoxed(mRS, mResources, R.drawable.frame, Element.RGBA_8888(mRS), true);
-        mTextures[1].setName("Tvumeter_frame");
         mScript.set_gTvumeter_frame(mTextures[1]);
         mTextures[2] = Allocation.createFromBitmapResourceBoxed(mRS, mResources, R.drawable.peak_on, Element.RGBA_8888(mRS), true);
-        mTextures[2].setName("Tvumeter_peak_on");
         mScript.set_gTvumeter_peak_on(mTextures[2]);
         mTextures[3] = Allocation.createFromBitmapResourceBoxed(mRS, mResources, R.drawable.peak_off, Element.RGBA_8888(mRS), true);
-        mTextures[3].setName("Tvumeter_peak_off");
         mScript.set_gTvumeter_peak_off(mTextures[3]);
         mTextures[4] = Allocation.createFromBitmapResourceBoxed(mRS, mResources, R.drawable.needle, Element.RGBA_8888(mRS), true);
-        mTextures[4].setName("Tvumeter_needle");
         mScript.set_gTvumeter_needle(mTextures[4]);
         mTextures[5] = Allocation.createFromBitmapResourceBoxed(mRS, mResources, R.drawable.black, Element.RGB_565(mRS), true);
-        mTextures[5].setName("Tvumeter_black");
         mScript.set_gTvumeter_black(mTextures[5]);
         mTextures[6] = Allocation.createFromBitmapResource(mRS, mResources, R.drawable.albumart, Element.RGBA_8888(mRS), true);
-        mTextures[6].setName("Tvumeter_album");
         mScript.set_gTvumeter_album(mTextures[6]);
         mTextures[7] = Allocation.createFromBitmapResource(mRS, mResources, R.drawable.fire, Element.RGB_565(mRS), false);
-        mTextures[7].setName("Tlinetexture");
         mScript.set_gTlinetexture(mTextures[7]);
 
         final int count = mTextures.length;
@@ -223,7 +214,6 @@ class Visualization5RS extends RenderScriptScene {
             builder.setTexture(ProgramFragment.Builder.EnvMode.REPLACE,
                                ProgramFragment.Builder.Format.RGBA, 0);
             mPfBackgroundNoMip = builder.create();
-            mPfBackgroundNoMip.setName("PFBackgroundNoMip");
             mPfBackgroundNoMip.bindSampler(mSamplerNoMip, 0);
             mScript.set_gPFBackgroundNoMip(mPfBackgroundNoMip);
         }
@@ -233,7 +223,6 @@ class Visualization5RS extends RenderScriptScene {
             builder.setTexture(ProgramFragment.Builder.EnvMode.REPLACE,
                                ProgramFragment.Builder.Format.RGBA, 0);
             mPfBackgroundMip = builder.create();
-            mPfBackgroundMip.setName("PFBackgroundMip");
             mPfBackgroundMip.bindSampler(mSamplerMip, 0);
             mScript.set_gPFBackgroundMip(mPfBackgroundMip);
         }
@@ -246,7 +235,6 @@ class Visualization5RS extends RenderScriptScene {
             builder.setDitherEnable(true); // without dithering there is severe banding
             builder.setDepthMask(false);
             mPfsBackground = builder.create();
-            mPfsBackground.setName("PFSBackground");
 
             mScript.set_gPFSBackground(mPfsBackground);
         }
@@ -264,7 +252,6 @@ class Visualization5RS extends RenderScriptScene {
 
         // Create the Allocation for the vertices
         mCubeMesh = meshBuilder.create();
-        mCubeMesh.setName("CubeMesh");
 
         mCubeMesh.bindVertexAllocation(mVertexBuffer.getAllocation(), 0);
 
@@ -294,8 +281,6 @@ class Visualization5RS extends RenderScriptScene {
         mPointAlloc.uploadToBufferObject();
         mLineIdxAlloc.data(mIndexData);
         mLineIdxAlloc.uploadToBufferObject();
-
-        mScript.setClearColor(0.0f, 0.0f, 0.0f, 1.0f);
 
         return mScript;
     }

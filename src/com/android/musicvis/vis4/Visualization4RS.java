@@ -100,7 +100,6 @@ class Visualization4RS extends RenderScriptScene {
         // First set up the coordinate system and such
         ProgramVertex.Builder pvb = new ProgramVertex.Builder(mRS, null, null);
         mPVBackground = pvb.create();
-        mPVBackground.setName("PVBackground");
         mPVAlloc = new ProgramVertex.MatrixAllocation(mRS);
         mPVBackground.bindAllocation(mPVAlloc);
         mPVAlloc.setupProjectionNormalized(mWidth, mHeight);
@@ -111,22 +110,16 @@ class Visualization4RS extends RenderScriptScene {
 
         mTextures = new Allocation[6];
         mTextures[0] = Allocation.createFromBitmapResourceBoxed(mRS, mResources, R.drawable.background, Element.RGBA_8888(mRS), false);
-        mTextures[0].setName("Tvumeter_background");
         mScript.set_gTvumeter_background(mTextures[0]);
         mTextures[1] = Allocation.createFromBitmapResourceBoxed(mRS, mResources, R.drawable.frame, Element.RGBA_8888(mRS), false);
-        mTextures[1].setName("Tvumeter_frame");
         mScript.set_gTvumeter_frame(mTextures[1]);
         mTextures[2] = Allocation.createFromBitmapResourceBoxed(mRS, mResources, R.drawable.peak_on, Element.RGBA_8888(mRS), false);
-        mTextures[2].setName("Tvumeter_peak_on");
         mScript.set_gTvumeter_peak_on(mTextures[2]);
         mTextures[3] = Allocation.createFromBitmapResourceBoxed(mRS, mResources, R.drawable.peak_off, Element.RGBA_8888(mRS), false);
-        mTextures[3].setName("Tvumeter_peak_off");
         mScript.set_gTvumeter_peak_off(mTextures[3]);
         mTextures[4] = Allocation.createFromBitmapResourceBoxed(mRS, mResources, R.drawable.needle, Element.RGBA_8888(mRS), false);
-        mTextures[4].setName("Tvumeter_needle");
         mScript.set_gTvumeter_needle(mTextures[4]);
         mTextures[5] = Allocation.createFromBitmapResourceBoxed(mRS, mResources, R.drawable.black, Element.RGB_565(mRS), false);
-        mTextures[5].setName("Tvumeter_black");
         mScript.set_gTvumeter_black(mTextures[5]);
 
         final int count = mTextures.length;
@@ -146,7 +139,6 @@ class Visualization4RS extends RenderScriptScene {
             builder.setTexture(ProgramFragment.Builder.EnvMode.REPLACE,
                                ProgramFragment.Builder.Format.RGBA, 0);
             mPfBackground = builder.create();
-            mPfBackground.setName("PFBackground");
             mPfBackground.bindSampler(mSampler, 0);
 
             mScript.set_gPFBackground(mPfBackground);
@@ -160,7 +152,6 @@ class Visualization4RS extends RenderScriptScene {
             builder.setDitherEnable(true); // without dithering there is severe banding
             builder.setDepthMask(false);
             mPfsBackground = builder.create();
-            mPfsBackground.setName("PFSBackground");
 
             mScript.set_gPFSBackground(mPfsBackground);
         }

@@ -38,31 +38,24 @@ rs_program_store gPFSBackground;
 
 #define RSID_POINTS 1
 
-void dumpState() {
-
-//    debugF("@@@@@ yrot: ", gyRotation);
-
-}
-
 
 int root(int launchID) {
-
-    int i;
+    rsgClearColor(0.f, 0.f, 0.f, 1.f);
 
     // Draw the visualizer.
-    bindProgramVertex(gPVBackground);
-    bindProgramFragment(gPFBackground);
-    bindProgramStore(gPFSBackground);
+    rsgBindProgramVertex(gPVBackground);
+    rsgBindProgramFragment(gPFBackground);
+    rsgBindProgramStore(gPFSBackground);
 
-    float mat1[16];
+    rs_matrix4x4 mat1;
     float scale = 0.0041;
-    matrixLoadRotate(mat1, 0.f, 0.f, 0.f, 1.f);
-    matrixScale(mat1, scale, scale, scale);
-    vpLoadModelMatrix(mat1);
+    rsMatrixLoadRotate(&mat1, 0.f, 0.f, 0.f, 1.f);
+    rsMatrixScale(&mat1, scale, scale, scale);
+    rsgProgramVertexLoadModelMatrix(&mat1);
 
     // draw the background image (416x233)
-    bindTexture(gPFBackground, 0, gTvumeter_background);
-    drawQuadTexCoords(
+    rsgBindTexture(gPFBackground, 0, gTvumeter_background);
+    rsgDrawQuadTexCoords(
             -208.0f, -33.0f, 0.0f,        // space
                 0.09375f, 0.9551f,        // texture
             208, -33.0f, 0.0f,            // space
@@ -74,11 +67,11 @@ int root(int launchID) {
 
     // draw the peak indicator light (56x58)
     if (gPeak > 0) {
-        bindTexture(gPFBackground, 0, gTvumeter_peak_on);
+        rsgBindTexture(gPFBackground, 0, gTvumeter_peak_on);
     } else {
-        bindTexture(gPFBackground, 0, gTvumeter_peak_off);
+        rsgBindTexture(gPFBackground, 0, gTvumeter_peak_off);
     }
-    drawQuadTexCoords(
+    rsgDrawQuadTexCoords(
             140.0f, 70.0f, -1.0f,         // space
                 0.0625f, 0.953125,        // texture
             196, 70.0f, -1.0f,            // space
@@ -93,12 +86,12 @@ int root(int launchID) {
     // Draw the needle (88x262, center of rotation at 44,217 from top left)
 
     // set matrix so point of rotation becomes origin
-    matrixLoadTranslate(mat1, 0.f, -57.0f * scale, 0.f);
-    matrixRotate(mat1, gAngle - 90.f, 0.f, 0.f, 1.f);
-    matrixScale(mat1, scale, scale, scale);
-    vpLoadModelMatrix(mat1);
-    bindTexture(gPFBackground, 0, gTvumeter_needle);
-    drawQuadTexCoords(
+    rsMatrixLoadTranslate(&mat1, 0.f, -57.0f * scale, 0.f);
+    rsMatrixRotate(&mat1, gAngle - 90.f, 0.f, 0.f, 1.f);
+    rsMatrixScale(&mat1, scale, scale, scale);
+    rsgProgramVertexLoadModelMatrix(&mat1);
+    rsgBindTexture(gPFBackground, 0, gTvumeter_needle);
+    rsgDrawQuadTexCoords(
             -44.0f, -102.0f+57.f, 0.0f,         // space
                 .15625f, 0.755859375f,  // texture
             44.0f, -102.0f+57.f, 0.0f,             // space
@@ -110,21 +103,21 @@ int root(int launchID) {
 
 
     // restore matrix
-    matrixLoadRotate(mat1, 0.f, 0.f, 0.f, 1.f);
-    matrixScale(mat1, scale, scale, scale);
-    vpLoadModelMatrix(mat1);
+    rsMatrixLoadRotate(&mat1, 0.f, 0.f, 0.f, 1.f);
+    rsMatrixScale(&mat1, scale, scale, scale);
+    rsgProgramVertexLoadModelMatrix(&mat1);
 
     // erase the part of the needle we don't want to show
-    bindTexture(gPFBackground, 0, gTvumeter_black);
-    drawQuad(-100.f, -55.f, 0.f,
+    rsgBindTexture(gPFBackground, 0, gTvumeter_black);
+    rsgDrawQuad(-100.f, -55.f, 0.f,
              -100.f, -105.f, 0.f,
               100.f, -105.f, 0.f,
               100.f, -55.f, 0.f);
 
 
     // draw the frame (472x290)
-    bindTexture(gPFBackground, 0, gTvumeter_frame);
-    drawQuadTexCoords(
+    rsgBindTexture(gPFBackground, 0, gTvumeter_frame);
+    rsgDrawQuadTexCoords(
             -236.0f, -60.0f, 0.0f,           // space
                 0.0390625f, 0.783203125f,    // texture
             236, -60.0f, 0.0f,               // space
@@ -133,8 +126,6 @@ int root(int launchID) {
                 0.9609375f, 0.216796875f,    // texture
             -236.0f, 230.0f, 0.0f,           // space
                 0.0390625f, 0.216796875f);   // texture
-
-
 
     return 1;
 }

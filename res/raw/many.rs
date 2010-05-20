@@ -57,31 +57,22 @@ rs_mesh gCubeMesh;
 
 #define RSID_POINTS 1
 
-void dumpState() {
 
-//    debugF("@@@@@ yrot: ", State->yRotation);
-
-}
-
-
-void drawVU(float* ident) {
-
-    int i;
-
-    float mat1[16];
+void drawVU(rs_matrix4x4 *ident) {
+    rs_matrix4x4 mat1;
     float scale = 0.0041;
 
-    matrixLoadMat(mat1,ident);
-    matrixRotate(mat1, 0.f, 0.f, 0.f, 1.f);
-    matrixScale(mat1, scale, scale, scale);
-    vpLoadModelMatrix(mat1);
+    rsMatrixLoadMat(&mat1,ident);
+    rsMatrixRotate(&mat1, 0.f, 0.f, 0.f, 1.f);
+    rsMatrixScale(&mat1, scale, scale, scale);
+    rsgProgramVertexLoadModelMatrix(&mat1);
 
-    bindProgramFragment(gPFBackgroundMip);
-    bindProgramStore(gPFSBackground);
+    rsgBindProgramFragment(gPFBackgroundMip);
+    rsgBindProgramStore(gPFSBackground);
 
     // draw the background image (416x233)
-    bindTexture(gPFBackgroundMip, 0, gTvumeter_background);
-    drawQuadTexCoords(
+    rsgBindTexture(gPFBackgroundMip, 0, gTvumeter_background);
+    rsgDrawQuadTexCoords(
             -208.0f, -33.0f, 600.0f,        // space
                 0.09375f, 0.9551f,        // texture
             208, -33.0f, 600.0f,            // space
@@ -93,11 +84,11 @@ void drawVU(float* ident) {
 
     // draw the peak indicator light (56x58)
     if (gPeak > 0) {
-        bindTexture(gPFBackgroundMip, 0, gTvumeter_peak_on);
+        rsgBindTexture(gPFBackgroundMip, 0, gTvumeter_peak_on);
     } else {
-        bindTexture(gPFBackgroundMip, 0, gTvumeter_peak_off);
+        rsgBindTexture(gPFBackgroundMip, 0, gTvumeter_peak_off);
     }
-    drawQuadTexCoords(
+    rsgDrawQuadTexCoords(
             140.0f, 70.0f, 600.0f,         // space
                 0.0625f, 0.953125,        // texture
             196, 70.0f, 600.0f,            // space
@@ -112,13 +103,13 @@ void drawVU(float* ident) {
     // Draw the needle (88x262, center of rotation at 44,217 from top left)
 
     // set matrix so point of rotation becomes origin
-    matrixLoadMat(mat1,ident);
-    matrixTranslate(mat1, 0.f, -57.0f * scale, 0.f);
-    matrixRotate(mat1, gAngle - 90.f, 0.f, 0.f, 1.f);
-    matrixScale(mat1, scale, scale, scale);
-    vpLoadModelMatrix(mat1);
-    bindTexture(gPFBackgroundMip, 0, gTvumeter_needle);
-    drawQuadTexCoords(
+    rsMatrixLoadMat(&mat1,ident);
+    rsMatrixTranslate(&mat1, 0.f, -57.0f * scale, 0.f);
+    rsMatrixRotate(&mat1, gAngle - 90.f, 0.f, 0.f, 1.f);
+    rsMatrixScale(&mat1, scale, scale, scale);
+    rsgProgramVertexLoadModelMatrix(&mat1);
+    rsgBindTexture(gPFBackgroundMip, 0, gTvumeter_needle);
+    rsgDrawQuadTexCoords(
             -44.0f, -102.0f+57.f, 600.0f,         // space
                 .15625f, 0.755859375f,  // texture
             44.0f, -102.0f+57.f, 600.0f,             // space
@@ -130,22 +121,22 @@ void drawVU(float* ident) {
 
 
     // restore matrix
-    matrixLoadMat(mat1,ident);
-    matrixRotate(mat1, 0.f, 0.f, 0.f, 1.f);
-    matrixScale(mat1, scale, scale, scale);
-    vpLoadModelMatrix(mat1);
+    rsMatrixLoadMat(&mat1,ident);
+    rsMatrixRotate(&mat1, 0.f, 0.f, 0.f, 1.f);
+    rsMatrixScale(&mat1, scale, scale, scale);
+    rsgProgramVertexLoadModelMatrix(&mat1);
 
     // erase the part of the needle we don't want to show
-    bindTexture(gPFBackgroundMip, 0, gTvumeter_black);
-    drawQuad(-100.f, -55.f, 600.f,
+    rsgBindTexture(gPFBackgroundMip, 0, gTvumeter_black);
+    rsgDrawQuad(-100.f, -55.f, 600.f,
              -100.f, -105.f, 600.f,
               100.f, -105.f, 600.f,
               100.f, -55.f, 600.f);
 
 
     // draw the frame (472x290)
-    bindTexture(gPFBackgroundMip, 0, gTvumeter_frame);
-    drawQuadTexCoords(
+    rsgBindTexture(gPFBackgroundMip, 0, gTvumeter_frame);
+    rsgDrawQuadTexCoords(
             -236.0f, -60.0f, 600.0f,           // space
                 0.0390625f, 0.783203125f,    // texture
             236, -60.0f, 600.0f,               // space
@@ -196,13 +187,13 @@ void makeIdleWave(float *points) {
 }
 
 
-void drawWave(float *ident) {
+void drawWave(rs_matrix4x4 *ident) {
     float scale = .008f;
-    float mat1[16];
-    matrixLoadMat(mat1, ident);
-    matrixScale(mat1, scale, scale / 2048.f, scale);
-    matrixTranslate(mat1, 0.f, 81920.f, 350.f);
-    vpLoadModelMatrix(mat1);
+    rs_matrix4x4 mat1;
+    rsMatrixLoadMat(&mat1, ident);
+    rsMatrixScale(&mat1, scale, scale / 2048.f, scale);
+    rsMatrixTranslate(&mat1, 0.f, 81920.f, 350.f);
+    rsgProgramVertexLoadModelMatrix(&mat1);
     int i;
 
     if (gIdle) {
@@ -252,36 +243,34 @@ void drawWave(float *ident) {
         }
     }
 
-    uploadToBufferObject(gPointBuffer);
-    bindProgramFragment(gPFBackgroundNoMip);
-    bindTexture(gPFBackgroundNoMip, 0, gTlinetexture);
-    drawSimpleMesh(gCubeMesh);
+    rsgUploadToBufferObject(gPointBuffer);
+    rsgBindProgramFragment(gPFBackgroundNoMip);
+    rsgBindTexture(gPFBackgroundNoMip, 0, gTlinetexture);
+    rsgDrawSimpleMesh(gCubeMesh);
 }
 
 
-void drawVizLayer(float *ident) {
-
-    int i;
-
-    for (i = 0; i < 6; i++) {
+void drawVizLayer(rs_matrix4x4 *ident) {
+    for (int i = 0; i < 6; i++) {
         if (i & 1) {
             drawVU(ident);
         } else {
             drawWave(ident);
         }
 
-        matrixRotate(ident, 60.f, 0.f, 1.f, 0.f);
+        rsMatrixRotate(ident, 60.f, 0.f, 1.f, 0.f);
     }
 }
 
 
 int root(int launchID) {
+    rsgClearColor(0.f, 0.f, 0.f, 1.f);
 
-    bindProgramVertex(gPVBackground);
+    rsgBindProgramVertex(gPVBackground);
 
     int i;
-    float ident[16];
-    int now = uptimeMillis();
+    rs_matrix4x4 ident;
+    int now = (int)rsUptimeMillis();
     int delta = now - lastuptime;
     lastuptime = now;
     if (delta > 80) {
@@ -294,19 +283,19 @@ int root(int launchID) {
     autorotation += .3 * delta / 35;
     while (autorotation > 360.f) autorotation -= 360.f;
 
-    matrixLoadIdentity(ident);
-    matrixRotate(ident, gTilt, 1.f, 0.f, 0.f);
-    matrixRotate(ident, autorotation + gRotate, 0.f, 1.f, 0.f);
+    rsMatrixLoadIdentity(&ident);
+    rsMatrixRotate(&ident, gTilt, 1.f, 0.f, 0.f);
+    rsMatrixRotate(&ident, autorotation + gRotate, 0.f, 1.f, 0.f);
 
     // draw the reflections
-    matrixTranslate(ident, 0.f, -1.f, 0.f);
-    matrixScale(ident, 1.f, -1.f, 1.f);
-    drawVizLayer(ident);
+    rsMatrixTranslate(&ident, 0.f, -1.f, 0.f);
+    rsMatrixScale(&ident, 1.f, -1.f, 1.f);
+    drawVizLayer(&ident);
 
     // draw the reflecting plane
-    bindProgramFragment(gPFBackgroundMip);
-    bindTexture(gPFBackgroundMip, 0, gTvumeter_album);
-    drawQuadTexCoords(
+    rsgBindProgramFragment(gPFBackgroundMip);
+    rsgBindTexture(gPFBackgroundMip, 0, gTvumeter_album);
+    rsgDrawQuadTexCoords(
             -1500.0f, -60.0f, 1500.0f,           // space
                 0.f, 1.f,    // texture
             1500, -60.0f, 1500.0f,               // space
@@ -317,10 +306,10 @@ int root(int launchID) {
                 0.f, 0.f);   // texture
 
     // draw the visualizer
-    matrixScale(ident, 1.f, -1.f, 1.f);
-    matrixTranslate(ident, 0.f, 1.f, 0.f);
+    rsMatrixScale(&ident, 1.f, -1.f, 1.f);
+    rsMatrixTranslate(&ident, 0.f, 1.f, 0.f);
 
-    drawVizLayer(ident);
+    drawVizLayer(&ident);
 
     wave1pos++;
     wave1amp++;
