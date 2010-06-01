@@ -29,8 +29,8 @@ public class ScriptField_Vertex
         mItemArray = new Item[count];
 
         Element.Builder eb = new Element.Builder(rs);
-        eb.add(Element.createAttrib(rs, Element.DataType.FLOAT_32, Element.DataKind.POSITION, 2), "position");
-        eb.add(Element.createAttrib(rs, Element.DataType.FLOAT_32, Element.DataKind.TEXTURE, 2), "texture");
+        eb.add(Element.F32_2(rs), "position");
+        eb.add(Element.F32_2(rs), "texture0");
 
         mElement = eb.create();
 
