@@ -246,7 +246,7 @@ class Visualization5RS extends RenderScriptScene {
 
         final int vertexSlot = meshBuilder.addVertexType(mVertexBuffer.getType());
         // Specify the type and number of indices we need. We'll allocate them later.
-        meshBuilder.setIndexType(Element.INDEX_16(mRS), mIndexData.length);
+        meshBuilder.setIndexType(Element.U16(mRS), mIndexData.length);
         // This will be a line mesh
         meshBuilder.setPrimitive(Primitive.LINE);
 
