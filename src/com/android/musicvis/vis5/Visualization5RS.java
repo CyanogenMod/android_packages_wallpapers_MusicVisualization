@@ -257,7 +257,7 @@ class Visualization5RS extends RenderScriptScene {
 
         mPointAlloc = mVertexBuffer.getAllocation();
 
-        //sliao        mPointAlloc = mCubeMesh.createVertexAllocation(vertexSlot);
+        //       mPointAlloc = mCubeMesh.createVertexAllocation(vertexSlot);
 
         mScript.bind_gPoints(mVertexBuffer);
         mScript.set_gPointBuffer(mPointAlloc);
