@@ -68,7 +68,7 @@ class Visualization5RS extends RenderScriptScene {
     WorldState mWorldState = new WorldState();
 
     ScriptC_Many mScript;
-    private ScriptField_Vertex mVertexBuffer;
+    private com.android.musicvis.vis5.ScriptField_Vertex mVertexBuffer;
 
     private ProgramStore mPfsBackground;
     private ProgramFragment mPfBackgroundMip;
@@ -242,7 +242,7 @@ class Visualization5RS extends RenderScriptScene {
         // Start creating the mesh
         final SimpleMesh.Builder meshBuilder = new SimpleMesh.Builder(mRS);
 
-        mVertexBuffer = new ScriptField_Vertex(mRS, mPointData.length / 4);
+        mVertexBuffer = new com.android.musicvis.vis5.ScriptField_Vertex(mRS, mPointData.length / 4);
 
         final int vertexSlot = meshBuilder.addVertexType(mVertexBuffer.getType());
         // Specify the type and number of indices we need. We'll allocate them later.
@@ -257,7 +257,7 @@ class Visualization5RS extends RenderScriptScene {
 
         mPointAlloc = mVertexBuffer.getAllocation();
 
-        mPointAlloc = mCubeMesh.createVertexAllocation(vertexSlot);
+        //sliao        mPointAlloc = mCubeMesh.createVertexAllocation(vertexSlot);
 
         mScript.bind_gPoints(mVertexBuffer);
         mScript.set_gPointBuffer(mPointAlloc);

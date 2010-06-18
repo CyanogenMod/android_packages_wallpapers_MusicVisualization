@@ -14,7 +14,7 @@
  * limitations under the License.
  */
 
-package com.android.musicvis;
+package com.android.musicvis.vis5;
 
 import android.renderscript.*;
 import android.content.res.Resources;

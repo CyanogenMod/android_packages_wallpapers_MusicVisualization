@@ -42,10 +42,8 @@ rs_allocation gTvumeter_album;
 rs_program_store gPFSBackground;
 
 typedef struct Vertex {
-    float x;
-    float y;
-    float s;
-    float t;
+    float2 position;
+    float2 texture0;
 } Vertex_t;
 Vertex_t *gPoints;
 

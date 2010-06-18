@@ -29,10 +29,8 @@ rs_program_vertex gPVBackground;
 rs_program_fragment gPFBackground;
 
 typedef struct Vertex {
-    float x;
-    float y;
-    float s;
-    float t;
+    float2 position;
+    float2 texture0;
 } Vertex_t;
 Vertex_t *gPoints;
 
