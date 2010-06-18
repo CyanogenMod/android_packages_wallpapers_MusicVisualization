@@ -155,7 +155,7 @@ public class GenericWaveRS extends RenderScriptScene {
 
         mPointAlloc = mVertexBuffer.getAllocation();
 
-        mScript.bind_gPoints(mPointAlloc);
+        mScript.bind_gPoints(mVertexBuffer);
         mScript.set_gPointBuffer(mPointAlloc);
         mScript.set_gCubeMesh(mCubeMesh);
 

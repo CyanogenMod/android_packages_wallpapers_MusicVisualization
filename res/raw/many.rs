@@ -14,6 +14,8 @@
 
 #pragma version(1)
 
+#pragma rs java_package_name(com.android.musicvis.vis5)
+
 #include "../../../../../frameworks/base/libs/rs/scriptc/rs_types.rsh"
 #include "../../../../../frameworks/base/libs/rs/scriptc/rs_math.rsh"
 #include "../../../../../frameworks/base/libs/rs/scriptc/rs_graphics.rsh"
@@ -39,7 +41,7 @@ rs_allocation gTvumeter_album;
 
 rs_program_store gPFSBackground;
 
-typedef struct Vertex_s {
+typedef struct Vertex {
     float x;
     float y;
     float s;
@@ -53,7 +55,7 @@ rs_allocation gTlinetexture;
 rs_mesh gCubeMesh;
 
 #pragma rs export_var(gAngle, gPeak, gRotate, gTilt, gIdle, gWaveCounter, gPVBackground, gPFBackgroundMip, gPFBackgroundNoMip, gTvumeter_background, gTvumeter_peak_on, gTvumeter_peak_off, gTvumeter_needle, gTvumeter_black, gTvumeter_frame, gTvumeter_album, gPFSBackground, gPoints, gPointBuffer, gTlinetexture, gCubeMesh)
-
+#pragma rs export_func()
 
 #define RSID_POINTS 1
 

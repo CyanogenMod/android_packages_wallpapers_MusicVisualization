@@ -1,73 +1,140 @@
+/*
+ * Copyright (C) 2010 The Android Open Source Project
+ *
+ * Licensed under the Apache License, Version 2.0 (the "License");
+ * you may not use this file except in compliance with the License.
+ * You may obtain a copy of the License at
+ *
+ *      http://www.apache.org/licenses/LICENSE-2.0
+ *
+ * Unless required by applicable law or agreed to in writing, software
+ * distributed under the License is distributed on an "AS IS" BASIS,
+ * WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
+ * See the License for the specific language governing permissions and
+ * limitations under the License.
+ */
 
 package com.android.musicvis;
 
-import android.content.res.Resources;
 import android.renderscript.*;
+import android.content.res.Resources;
 import android.util.Log;
 
-public class ScriptC_Waveform
-    extends android.renderscript.ScriptC
-{
-
-    public ScriptC_Waveform(RenderScript rs, Resources resources, int id, boolean isRoot) {
+public class ScriptC_Waveform extends ScriptC {
+    // Constructor
+    public  ScriptC_Waveform(RenderScript rs, Resources resources, int id, boolean isRoot) {
         super(rs, resources, id, isRoot);
     }
 
-    private float mField_gYRotation;
+    private final static int mExportVarIdx_gYRotation = 0;
+    private float mExportVar_gYRotation;
     public void set_gYRotation(float v) {
-        mField_gYRotation = v;
-        setVar(0, v);
+        mExportVar_gYRotation = v;
+        setVar(mExportVarIdx_gYRotation, v);
     }
-    private int mField_gIdle;
+
+    public float get_gYRotation() {
+        return mExportVar_gYRotation;
+    }
+
+    private final static int mExportVarIdx_gIdle = 1;
+    private int mExportVar_gIdle;
     public void set_gIdle(int v) {
-        mField_gIdle = v;
-        setVar(1, v);
+        mExportVar_gIdle = v;
+        setVar(mExportVarIdx_gIdle, v);
     }
-    private int   mField_gWaveCounter;
+
+    public int get_gIdle() {
+        return mExportVar_gIdle;
+    }
+
+    private final static int mExportVarIdx_gWaveCounter = 2;
+    private int mExportVar_gWaveCounter;
     public void set_gWaveCounter(int v) {
-        mField_gWaveCounter = v;
-        setVar(2, v);
+        mExportVar_gWaveCounter = v;
+        setVar(mExportVarIdx_gWaveCounter, v);
     }
-    private int   mField_gWidth;
+
+    public int get_gWaveCounter() {
+        return mExportVar_gWaveCounter;
+    }
+
+    private final static int mExportVarIdx_gWidth = 3;
+    private int mExportVar_gWidth;
     public void set_gWidth(int v) {
-        mField_gWidth = v;
-        setVar(3, v);
+        mExportVar_gWidth = v;
+        setVar(mExportVarIdx_gWidth, v);
     }
 
-    private ProgramVertex mField_gPVBackground;
+    public int get_gWidth() {
+        return mExportVar_gWidth;
+    }
+
+    private final static int mExportVarIdx_gPVBackground = 4;
+    private ProgramVertex mExportVar_gPVBackground;
     public void set_gPVBackground(ProgramVertex v) {
-        mField_gPVBackground = v;
-        setVar(4, v.getID());
+        mExportVar_gPVBackground = v;
+        setVar(mExportVarIdx_gPVBackground, (v == null) ? 0 : v.getID());
     }
-    private ProgramFragment mField_gPFBackground;
+
+    public ProgramVertex get_gPVBackground() {
+        return mExportVar_gPVBackground;
+    }
+
+    private final static int mExportVarIdx_gPFBackground = 5;
+    private ProgramFragment mExportVar_gPFBackground;
     public void set_gPFBackground(ProgramFragment v) {
-        mField_gPFBackground = v;
-        setVar(5, v.getID());
+        mExportVar_gPFBackground = v;
+        setVar(mExportVarIdx_gPFBackground, (v == null) ? 0 : v.getID());
     }
 
-    // Pointers
-    public void bind_gPoints(Allocation v) {
-        if (v == null) {
-            bindAllocation(null, 6);
-        } else {
-            bindAllocation(v, 6);
-        }
+    public ProgramFragment get_gPFBackground() {
+        return mExportVar_gPFBackground;
     }
 
-    private Allocation mField_gPointBuffer;
+    private final static int mExportVarIdx_gPoints = 6;
+    private ScriptField_Vertex mExportVar_gPoints;
+    public void bind_gPoints(ScriptField_Vertex v) {
+        mExportVar_gPoints = v;
+        if(v == null) bindAllocation(null, mExportVarIdx_gPoints);
+        else bindAllocation(v.getAllocation(), mExportVarIdx_gPoints);
+    }
+
+    public ScriptField_Vertex get_gPoints() {
+        return mExportVar_gPoints;
+    }
+
+    private final static int mExportVarIdx_gPointBuffer = 7;
+    private Allocation mExportVar_gPointBuffer;
     public void set_gPointBuffer(Allocation v) {
-        mField_gPointBuffer = v;
-        setVar(7, v.getID());
+        mExportVar_gPointBuffer = v;
+        setVar(mExportVarIdx_gPointBuffer, (v == null) ? 0 : v.getID());
     }
-    private Allocation mField_gTlinetexture;
+
+    public Allocation get_gPointBuffer() {
+        return mExportVar_gPointBuffer;
+    }
+
+    private final static int mExportVarIdx_gTlinetexture = 8;
+    private Allocation mExportVar_gTlinetexture;
     public void set_gTlinetexture(Allocation v) {
-        mField_gTlinetexture = v;
-        setVar(8, v.getID());
+        mExportVar_gTlinetexture = v;
+        setVar(mExportVarIdx_gTlinetexture, (v == null) ? 0 : v.getID());
     }
-    private SimpleMesh mField_gCubeMesh;
+
+    public Allocation get_gTlinetexture() {
+        return mExportVar_gTlinetexture;
+    }
+
+    private final static int mExportVarIdx_gCubeMesh = 9;
+    private SimpleMesh mExportVar_gCubeMesh;
     public void set_gCubeMesh(SimpleMesh v) {
-        mField_gCubeMesh = v;
-        setVar(9, v.getID());
+        mExportVar_gCubeMesh = v;
+        setVar(mExportVarIdx_gCubeMesh, (v == null) ? 0 : v.getID());
+    }
+
+    public SimpleMesh get_gCubeMesh() {
+        return mExportVar_gCubeMesh;
     }
 
 }

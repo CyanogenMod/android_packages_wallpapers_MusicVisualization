@@ -14,6 +14,8 @@
 
 #pragma version(1)
 
+#pragma rs java_package_name(com.android.musicvis.vis4)
+
 #include "../../../../../frameworks/base/libs/rs/scriptc/rs_types.rsh"
 #include "../../../../../frameworks/base/libs/rs/scriptc/rs_math.rsh"
 #include "../../../../../frameworks/base/libs/rs/scriptc/rs_graphics.rsh"
@@ -35,6 +37,7 @@ rs_allocation gTvumeter_frame;
 rs_program_store gPFSBackground;
 
 #pragma rs export_var(gAngle, gPeak, gPVBackground, gPFBackground, gTvumeter_background, gTvumeter_peak_on, gTvumeter_peak_off, gTvumeter_needle, gTvumeter_black, gTvumeter_frame, gPFSBackground)
+#pragma rs export_func()
 
 #define RSID_POINTS 1
 

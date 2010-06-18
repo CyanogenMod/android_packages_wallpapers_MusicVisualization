@@ -14,6 +14,8 @@
 
 #pragma version(1)
 
+#pragma rs java_package_name(com.android.musicvis)
+
 #include "../../../../../frameworks/base/libs/rs/scriptc/rs_types.rsh"
 #include "../../../../../frameworks/base/libs/rs/scriptc/rs_math.rsh"
 #include "../../../../../frameworks/base/libs/rs/scriptc/rs_graphics.rsh"
@@ -26,7 +28,7 @@ int gWidth;
 rs_program_vertex gPVBackground;
 rs_program_fragment gPFBackground;
 
-typedef struct Vertex_s {
+typedef struct Vertex {
     float x;
     float y;
     float s;
@@ -34,12 +36,12 @@ typedef struct Vertex_s {
 } Vertex_t;
 Vertex_t *gPoints;
 
-
 rs_allocation gPointBuffer;
 rs_allocation gTlinetexture;
 rs_mesh gCubeMesh;
 
 #pragma rs export_var(gYRotation, gIdle, gWaveCounter, gWidth, gPVBackground, gPFBackground, gPoints, gPointBuffer, gTlinetexture, gCubeMesh)
+#pragma rs export_func()
 
 #define RSID_POINTS 1
 
