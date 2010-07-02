@@ -248,13 +248,13 @@ public class ScriptC_Many extends ScriptC {
     }
 
     private final static int mExportVarIdx_gCubeMesh = 20;
-    private SimpleMesh mExportVar_gCubeMesh;
-    public void set_gCubeMesh(SimpleMesh v) {
+    private Mesh mExportVar_gCubeMesh;
+    public void set_gCubeMesh(Mesh v) {
         mExportVar_gCubeMesh = v;
         setVar(mExportVarIdx_gCubeMesh, (v == null) ? 0 : v.getID());
     }
 
-    public SimpleMesh get_gCubeMesh() {
+    public Mesh get_gCubeMesh() {
         return mExportVar_gCubeMesh;
     }
 

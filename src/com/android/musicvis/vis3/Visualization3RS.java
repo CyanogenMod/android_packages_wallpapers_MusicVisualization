@@ -29,7 +29,6 @@ import android.renderscript.Element;
 import android.renderscript.Primitive;
 import android.renderscript.ProgramVertex;
 import android.renderscript.ScriptC;
-import android.renderscript.SimpleMesh;
 import android.renderscript.Type;
 import android.renderscript.Element.Builder;
 import android.util.Log;

@@ -152,7 +152,6 @@ int root(int launchID) {
     // Draw the visualizer.
     rsgBindProgramVertex(gPVBackground);
     rsgBindProgramFragment(gPFBackground);
-    rsgUploadToBufferObject(gPointBuffer);
     rsgBindTexture(gPFBackground, 0, gTlinetexture);
 
     // Change the model matrix to account for the large model
@@ -162,7 +161,7 @@ int root(int launchID) {
     rsMatrixScale(&mat1, scale, scale, scale);
     rsgProgramVertexLoadModelMatrix(&mat1);
 
-    rsgDrawSimpleMesh(gCubeMesh, skip * 2, width * 2);
+    rsgDrawMesh(gCubeMesh, 0, skip * 2, width * 2);
 
     return 1;
 }

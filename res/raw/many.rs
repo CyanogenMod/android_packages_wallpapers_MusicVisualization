@@ -62,7 +62,7 @@ void drawVU(rs_matrix4x4 *ident) {
     rs_matrix4x4 mat1;
     float scale = 0.0041;
 
-    rsMatrixLoadMat(&mat1,ident);
+    rsMatrixLoad(&mat1,ident);
     rsMatrixRotate(&mat1, 0.f, 0.f, 0.f, 1.f);
     rsMatrixScale(&mat1, scale, scale, scale);
     rsgProgramVertexLoadModelMatrix(&mat1);
@@ -103,7 +103,7 @@ void drawVU(rs_matrix4x4 *ident) {
     // Draw the needle (88x262, center of rotation at 44,217 from top left)
 
     // set matrix so point of rotation becomes origin
-    rsMatrixLoadMat(&mat1,ident);
+    rsMatrixLoad(&mat1,ident);
     rsMatrixTranslate(&mat1, 0.f, -57.0f * scale, 0.f);
     rsMatrixRotate(&mat1, gAngle - 90.f, 0.f, 0.f, 1.f);
     rsMatrixScale(&mat1, scale, scale, scale);
@@ -121,7 +121,7 @@ void drawVU(rs_matrix4x4 *ident) {
 
 
     // restore matrix
-    rsMatrixLoadMat(&mat1,ident);
+    rsMatrixLoad(&mat1,ident);
     rsMatrixRotate(&mat1, 0.f, 0.f, 0.f, 1.f);
     rsMatrixScale(&mat1, scale, scale, scale);
     rsgProgramVertexLoadModelMatrix(&mat1);
@@ -190,7 +190,7 @@ void makeIdleWave(float *points) {
 void drawWave(rs_matrix4x4 *ident) {
     float scale = .008f;
     rs_matrix4x4 mat1;
-    rsMatrixLoadMat(&mat1, ident);
+    rsMatrixLoad(&mat1, ident);
     rsMatrixScale(&mat1, scale, scale / 2048.f, scale);
     rsMatrixTranslate(&mat1, 0.f, 81920.f, 350.f);
     rsgProgramVertexLoadModelMatrix(&mat1);
@@ -243,10 +243,9 @@ void drawWave(rs_matrix4x4 *ident) {
         }
     }
 
-    rsgUploadToBufferObject(gPointBuffer);
     rsgBindProgramFragment(gPFBackgroundNoMip);
     rsgBindTexture(gPFBackgroundNoMip, 0, gTlinetexture);
-    rsgDrawSimpleMesh(gCubeMesh);
+    rsgDrawMesh(gCubeMesh);
 }
 
 

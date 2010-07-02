@@ -30,7 +30,7 @@ import android.renderscript.ProgramFragment;
 import android.renderscript.ProgramVertex;
 import android.renderscript.Sampler;
 import android.renderscript.ScriptC;
-import android.renderscript.SimpleMesh;
+import android.renderscript.Mesh;
 import android.renderscript.Type;
 import android.renderscript.Element.Builder;
 import android.util.Log;
@@ -60,7 +60,7 @@ public class GenericWaveRS extends RenderScriptScene {
 
     private ScriptField_Vertex mVertexBuffer;
 
-    private SimpleMesh mCubeMesh;
+    private Mesh mCubeMesh;
 
     protected Allocation mPointAlloc;
     // 1024 lines, with 4 points per line (2 space, 2 texture) each consisting of x and y,
@@ -137,34 +137,24 @@ public class GenericWaveRS extends RenderScriptScene {
 
         mScript.set_gPVBackground(mPVBackground);
 
-        // Start creating the mesh
-        final SimpleMesh.Builder meshBuilder = new SimpleMesh.Builder(mRS);
-
         mVertexBuffer = new ScriptField_Vertex(mRS, mPointData.length / 4);
 
-        final int vertexSlot = meshBuilder.addVertexType(mVertexBuffer.getType());
-        // Specify the type and number of indices we need. We'll allocate them later.
-        meshBuilder.setIndexType(Element.U16(mRS), mIndexData.length);
+        // Start creating the mesh
+        final Mesh.AllocationBuilder meshBuilder = new Mesh.AllocationBuilder(mRS);
+        meshBuilder.addVertexAllocation(mVertexBuffer.getAllocation());
+        // Create the Allocation for the indices
+        mLineIdxAlloc = Allocation.createSized(mRS, Element.U16(mRS), mIndexData.length);
         // This will be a line mesh
-        meshBuilder.setPrimitive(Primitive.LINE);
+        meshBuilder.addIndexAllocation(mLineIdxAlloc, Primitive.LINE);
 
         // Create the Allocation for the vertices
         mCubeMesh = meshBuilder.create();
-
-        mCubeMesh.bindVertexAllocation(mVertexBuffer.getAllocation(), 0);
 
         mPointAlloc = mVertexBuffer.getAllocation();
 
         mScript.bind_gPoints(mVertexBuffer);
         mScript.set_gPointBuffer(mPointAlloc);
         mScript.set_gCubeMesh(mCubeMesh);
-
-        // Create the Allocation for the indices
-        mLineIdxAlloc = mCubeMesh.createIndexAllocation();
-
-        // Bind the allocations to the mesh
-        mCubeMesh.bindVertexAllocation(mPointAlloc, 0);
-        mCubeMesh.bindIndexAllocation(mLineIdxAlloc);
 
         //  put the vertex and index data in their respective buffers
         updateWave();
@@ -174,7 +164,6 @@ public class GenericWaveRS extends RenderScriptScene {
 
         //  upload the vertex and index data
         mPointAlloc.data(mPointData);
-        mPointAlloc.uploadToBufferObject();
         mLineIdxAlloc.data(mIndexData);
         mLineIdxAlloc.uploadToBufferObject();
 
