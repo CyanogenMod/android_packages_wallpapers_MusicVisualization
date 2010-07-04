@@ -16,6 +16,8 @@
 
 package com.android.musicvis.vis1;
 
+import com.android.musicvis.AudioCapture;
+
 import android.graphics.Canvas;
 import android.graphics.Paint;
 import android.graphics.Rect;
@@ -26,6 +28,8 @@ import android.service.wallpaper.WallpaperService;
 import android.util.Log;
 import android.view.MotionEvent;
 import android.view.SurfaceHolder;
+
+import java.util.Arrays;
 
 public class Visualization1 extends WallpaperService {
 
@@ -56,7 +60,8 @@ public class Visualization1 extends WallpaperService {
         private int mWidth;
         private float mCenterX;
         private float mCenterY;
-        private short [] mAudioData = new short[1024];
+        private AudioCapture mAudioCapture;
+        private int [] mVizData = new int[1024];
 
         private final Runnable mDrawCube = new Runnable() {
             public void run() {
@@ -86,15 +91,29 @@ public class Visualization1 extends WallpaperService {
         public void onDestroy() {
             super.onDestroy();
             mHandler.removeCallbacks(mDrawCube);
+            if (mAudioCapture != null) {
+                mAudioCapture.stop();
+                mAudioCapture.release();
+                mAudioCapture = null;
+            }
         }
 
         @Override
         public void onVisibilityChanged(boolean visible) {
             mVisible = visible;
             if (visible) {
+                if (mAudioCapture == null) {
+                    mAudioCapture = new AudioCapture(AudioCapture.TYPE_PCM, 1024);
+                }
+                mAudioCapture.start();
                 drawFrame();
             } else {
                 mHandler.removeCallbacks(mDrawCube);
+                if (mAudioCapture != null) {
+                    mAudioCapture.stop();
+                    mAudioCapture.release();
+                    mAudioCapture = null;
+                }
             }
         }
 
@@ -168,10 +187,14 @@ public class Visualization1 extends WallpaperService {
             c.save();
             c.drawColor(0xff000000);
 
-            MediaPlayer.snoop(mAudioData, 0);
+            if (mAudioCapture != null) {
+                mVizData = mAudioCapture.getFormattedData(1, 1);
+            } else {
+                Arrays.fill(mVizData, (int)0);
+            }
 
             for (int i = 0; i < mWidth; i++) {
-                c.drawPoint(i, mCenterY + mAudioData[i] / 256, mPaint);
+                c.drawPoint(i, mCenterY + mVizData[i], mPaint);
             }
             c.restore();
         }

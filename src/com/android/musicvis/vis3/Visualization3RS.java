@@ -19,10 +19,10 @@ package com.android.musicvis.vis3;
 import com.android.musicvis.GenericWaveRS;
 import com.android.musicvis.R;
 import com.android.musicvis.RenderScriptScene;
+import com.android.musicvis.AudioCapture;
 
 import android.graphics.Canvas;
 import android.graphics.Rect;
-import android.media.MediaPlayer;
 import android.os.Handler;
 import android.renderscript.Allocation;
 import android.renderscript.Element;
@@ -58,17 +58,37 @@ class Visualization3RS extends GenericWaveRS {
     }
 
     @Override
+    public void start() {
+        if (mAudioCapture == null) {
+            mAudioCapture = new AudioCapture(AudioCapture.TYPE_FFT, 512);
+        }
+        super.start();
+    }
+
+    @Override
+    public void stop() {
+        super.stop();
+        if (mAudioCapture != null) {
+            mAudioCapture.release();
+            mAudioCapture = null;
+        }
+    }
+
+    @Override
     public void update() {
 
-        int len = MediaPlayer.snoop(mVizData, 1);
-
+        int len = 0;
+        if (mAudioCapture != null) {
+            mVizData = mAudioCapture.getFormattedData(64, 1);
+            len = mVizData.length;
+        }
         if (len == 0) {
             if (mWorldState.idle == 0) {
                 mWorldState.idle = 1;
                 mState.data(mWorldState);
             }
             return;
-        }   
+        }
         if (mWorldState.idle != 0) {
             mWorldState.idle = 0;
             mState.data(mWorldState);
@@ -85,7 +105,6 @@ class Visualization3RS extends GenericWaveRS {
             }
             mAnalyzer[i] = newval;
         }
-
 
         // distribute the data over mWidth samples in the middle of the mPointData array
         final int outlen = mPointData.length / 8;
@@ -106,7 +125,6 @@ class Visualization3RS extends GenericWaveRS {
             }
         }
         mPointAlloc.data(mPointData);
-
     }
 
 }

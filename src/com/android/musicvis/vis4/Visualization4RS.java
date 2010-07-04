@@ -22,8 +22,8 @@ import static android.renderscript.Sampler.Value.WRAP;
 
 import com.android.musicvis.R;
 import com.android.musicvis.RenderScriptScene;
+import com.android.musicvis.AudioCapture;
 
-import android.media.MediaPlayer;
 import android.os.Handler;
 import android.renderscript.Allocation;
 import android.renderscript.Element;
@@ -37,6 +37,7 @@ import android.renderscript.ProgramStore.BlendDstFunc;
 import android.renderscript.ProgramStore.BlendSrcFunc;
 
 import java.util.TimeZone;
+import android.util.Log;
 
 class Visualization4RS extends RenderScriptScene {
 
@@ -70,7 +71,8 @@ class Visualization4RS extends RenderScriptScene {
     private ProgramVertex mPVBackground;
     private ProgramVertex.MatrixAllocation mPVAlloc;
 
-    private short [] mVizData = new short[1024];
+    private AudioCapture mAudioCapture = null;
+    private int [] mVizData = new int[1024];
 
     private static final int RSID_STATE = 0;
     private static final int RSID_POINTS = 1;
@@ -180,6 +182,10 @@ class Visualization4RS extends RenderScriptScene {
     public void start() {
         super.start();
         mVisible = true;
+        if (mAudioCapture == null) {
+            mAudioCapture = new AudioCapture(AudioCapture.TYPE_PCM, 1024);
+        }
+        mAudioCapture.start();
         updateWave();
     }
 
@@ -187,6 +193,11 @@ class Visualization4RS extends RenderScriptScene {
     public void stop() {
         super.stop();
         mVisible = false;
+        if (mAudioCapture != null) {
+            mAudioCapture.stop();
+            mAudioCapture.release();
+            mAudioCapture = null;
+        }
     }
 
     void updateWave() {
@@ -196,7 +207,12 @@ class Visualization4RS extends RenderScriptScene {
         }
         mHandler.postDelayed(mDrawCube, 20);
 
-        int len = MediaPlayer.snoop(mVizData, 0);
+        int len = 0;
+        if (mAudioCapture != null) {
+            // arbitrary scalar to get better range: 1024 = 4 * 256 (256 for 8 to 16 bit)
+            mVizData = mAudioCapture.getFormattedData(1024, 1);
+            len = mVizData.length;
+        }
 
         // Simulate running the signal through a rectifier by
         // taking the average of the absolute sample values.
@@ -209,9 +225,8 @@ class Visualization4RS extends RenderScriptScene {
                 }
                 volt += val;
             }
-            volt = volt * 4 / len; // arbitrary scalar to get better range
+            volt = volt / len;
         }
-
         // There are several forces working on the needle: a force applied by the
         // electromagnet, a force applied by the spring,  and friction.
         // The force from the magnet is proportional to the current flowing
@@ -252,5 +267,4 @@ class Visualization4RS extends RenderScriptScene {
         mWorldState.mAngle = 131f - (mNeedlePos / 410f); // ~80 degree range
         mState.data(mWorldState);
     }
-
 }
