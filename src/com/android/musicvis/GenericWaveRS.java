@@ -20,7 +20,6 @@ import static android.renderscript.Element.RGB_565;
 import static android.renderscript.Sampler.Value.LINEAR;
 import static android.renderscript.Sampler.Value.WRAP;
 
-import android.media.MediaPlayer;
 import android.os.Handler;
 import android.os.SystemClock;
 import android.renderscript.Allocation;
@@ -74,7 +73,8 @@ public class GenericWaveRS extends RenderScriptScene {
     private ProgramVertex mPVBackground;
     private ProgramVertex.MatrixAllocation mPVAlloc;
 
-    protected short [] mVizData = new short[1024];
+    protected AudioCapture mAudioCapture = null;
+    protected int [] mVizData = new int[1024];
 
     private ProgramFragment mPfBackground;
     private Sampler mSampler;
@@ -84,7 +84,6 @@ public class GenericWaveRS extends RenderScriptScene {
     private static final int RSID_POINTS = 1;
     private static final int RSID_LINES = 2;
     private static final int RSID_PROGRAMVERTEX = 3;
-
 
     protected GenericWaveRS(int width, int height, int texid) {
         super(width, height);
@@ -204,8 +203,9 @@ public class GenericWaveRS extends RenderScriptScene {
     public void start() {
         super.start();
         mVisible = true;
-        // Preroll the MediaPlayer so we don't get a spurious 'idle'
-        MediaPlayer.snoop(mVizData, 0);
+        if (mAudioCapture != null) {
+            mAudioCapture.start();
+        }
         SystemClock.sleep(200);
         updateWave();
     }
@@ -214,6 +214,9 @@ public class GenericWaveRS extends RenderScriptScene {
     public void stop() {
         super.stop();
         mVisible = false;
+        if (mAudioCapture != null) {
+            mAudioCapture.stop();
+        }
         updateWave();
     }
 
@@ -237,5 +240,4 @@ public class GenericWaveRS extends RenderScriptScene {
         mScript.set_gWaveCounter(mWorldState.waveCounter);
         mScript.set_gWidth(mWorldState.width);
     }
-
 }

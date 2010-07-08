@@ -19,8 +19,8 @@ package com.android.musicvis.vis5;
 import com.android.musicvis.R;
 import com.android.musicvis.RenderScriptScene;
 import com.android.musicvis.ScriptField_Vertex;
+import com.android.musicvis.AudioCapture;
 
-import android.media.MediaPlayer;
 import android.os.Handler;
 import android.renderscript.Allocation;
 import android.renderscript.Element;
@@ -91,7 +91,8 @@ class Visualization5RS extends RenderScriptScene {
     // 2 indices per line
     private short [] mIndexData = new short[256*2];
 
-    private short [] mVizData = new short[1024];
+    private AudioCapture mAudioCapture = null;
+    private int [] mVizData = new int[1024];
 
     private static final int RSID_STATE = 0;
     private static final int RSID_POINTS = 1;
@@ -276,6 +277,10 @@ class Visualization5RS extends RenderScriptScene {
     public void start() {
         super.start();
         mVisible = true;
+        if (mAudioCapture == null) {
+            mAudioCapture = new AudioCapture(AudioCapture.TYPE_PCM, 1024);
+        }
+        mAudioCapture.start();
         updateWave();
     }
 
@@ -283,6 +288,11 @@ class Visualization5RS extends RenderScriptScene {
     public void stop() {
         super.stop();
         mVisible = false;
+        if (mAudioCapture != null) {
+            mAudioCapture.stop();
+            mAudioCapture.release();
+            mAudioCapture = null;
+        }
     }
 
     void updateWave() {
@@ -292,7 +302,12 @@ class Visualization5RS extends RenderScriptScene {
         }
         mHandler.postDelayed(mDrawCube, 20);
 
-        int len = MediaPlayer.snoop(mVizData, 0);
+        int len = 0;
+        if (mAudioCapture != null) {
+            // arbitrary scalar to get better range: 1024 = 4 * 256 (256 for 8 to 16 bit)
+            mVizData = mAudioCapture.getFormattedData(1024, 1);
+            len = mVizData.length;
+        }
 
         // Simulate running the signal through a rectifier by
         // taking the average of the absolute sample values.
@@ -305,7 +320,7 @@ class Visualization5RS extends RenderScriptScene {
                 }
                 volt += val;
             }
-            volt = volt * 4 / len; // arbitrary scalar to get better range
+            volt = volt / len;
         }
 
         // There are several forces working on the needle: a force applied by the
