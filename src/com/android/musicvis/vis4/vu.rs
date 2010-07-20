@@ -16,9 +16,9 @@
 
 #pragma rs java_package_name(com.android.musicvis.vis4)
 
-#include "../../../../../frameworks/base/libs/rs/scriptc/rs_types.rsh"
-#include "../../../../../frameworks/base/libs/rs/scriptc/rs_math.rsh"
-#include "../../../../../frameworks/base/libs/rs/scriptc/rs_graphics.rsh"
+#include "rs_types.rsh"
+#include "rs_math.rsh"
+#include "rs_graphics.rsh"
 
 // State
 float gAngle;

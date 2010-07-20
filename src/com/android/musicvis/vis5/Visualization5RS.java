@@ -158,7 +158,7 @@ class Visualization5RS extends RenderScriptScene {
 
     @Override
     protected ScriptC createScript() {
-        mScript = new ScriptC_Many(mRS, mResources, R.raw.many_bc, true);
+        mScript = new ScriptC_Many(mRS, mResources, R.raw.many, true);
 
         // First set up the coordinate system and such
         ProgramVertex.Builder pvb = new ProgramVertex.Builder(mRS, null, null);

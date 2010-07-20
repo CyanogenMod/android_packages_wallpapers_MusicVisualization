@@ -115,7 +115,7 @@ public class GenericWaveRS extends RenderScriptScene {
     @Override
     protected ScriptC createScript() {
 
-        mScript = new ScriptC_Waveform(mRS, mResources, R.raw.waveform_bc, true);
+        mScript = new ScriptC_Waveform(mRS, mResources, R.raw.waveform, true);
 
         // set our java object as the data for the renderscript allocation
         mWorldState.yRotation = 0.0f;
