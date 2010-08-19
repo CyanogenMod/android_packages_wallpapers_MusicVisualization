@@ -45,9 +45,6 @@ public class AudioCapture {
         }
 
         mRawVizData = new byte[size];
-        if (type == TYPE_FFT) {
-            size /= 2;
-        }
         mFormattedVizData = new int[size];
 
         mVisualizer = null;
