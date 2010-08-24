@@ -38,7 +38,7 @@ import java.util.TimeZone;
 
 class Visualization3RS extends GenericWaveRS {
 
-    private short [] mAnalyzer = new short[256];
+    private short [] mAnalyzer = new short[512];
 
     float lastOffset;
 
@@ -85,13 +85,15 @@ class Visualization3RS extends GenericWaveRS {
             }
             return;
         }
+
+        if (len > mAnalyzer.length) len = mAnalyzer.length;
+
         if (mWorldState.idle != 0) {
             mWorldState.idle = 0;
             updateWorldState();
         }
 
-        // We always get 256 points
-        for (int i=0; i < 256; i++) {
+        for (int i = 0; i < len; i++) {
             short newval = (short)(mVizData[i] * (i/16+2));
             short oldval = mAnalyzer[i];
             if (newval >= oldval - 800) {
@@ -114,7 +116,7 @@ class Visualization3RS extends GenericWaveRS {
             if (val < 1f && val > -1f) val = 1;
             mPointData[(i + skip) * 8 + 1] = val;
             mPointData[(i + skip) * 8 + 5] = -val;
-            cnt += 256;
+            cnt += mAnalyzer.length;
             if (cnt > width) {
                 srcidx++;
                 cnt -= width;
