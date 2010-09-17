@@ -67,7 +67,7 @@ class Visualization5RS extends RenderScriptScene {
     }
     WorldState mWorldState = new WorldState();
 
-    ScriptC_Many mScript;
+    ScriptC_many mScript;
     private com.android.musicvis.vis5.ScriptField_Vertex mVertexBuffer;
 
     private ProgramStore mPfsBackground;
@@ -158,7 +158,7 @@ class Visualization5RS extends RenderScriptScene {
 
     @Override
     protected ScriptC createScript() {
-        mScript = new ScriptC_Many(mRS, mResources, R.raw.many, true);
+        mScript = new ScriptC_many(mRS, mResources, R.raw.many, true);
 
         // First set up the coordinate system and such
         ProgramVertex.Builder pvb = new ProgramVertex.Builder(mRS, null, null);
