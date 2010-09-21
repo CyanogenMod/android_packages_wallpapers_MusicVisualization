@@ -50,7 +50,7 @@ class Visualization2RS extends GenericWaveRS {
     public void update() {
         int len = 0;
         if (mAudioCapture != null) {
-            mVizData = mAudioCapture.getFormattedData(2,1);
+            mVizData = mAudioCapture.getFormattedData(1,1);
             len = mVizData.length;
         }
 

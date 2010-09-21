@@ -194,8 +194,8 @@ class Visualization4RS extends RenderScriptScene {
 
         int len = 0;
         if (mAudioCapture != null) {
-            // arbitrary scalar to get better range: 1024 = 4 * 256 (256 for 8 to 16 bit)
-            mVizData = mAudioCapture.getFormattedData(1024, 1);
+            // arbitrary scalar to get better range: 512 = 2 * 256 (256 for 8 to 16 bit)
+            mVizData = mAudioCapture.getFormattedData(512, 1);
             len = mVizData.length;
         }
 
