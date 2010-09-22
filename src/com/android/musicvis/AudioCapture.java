@@ -17,7 +17,7 @@
 package com.android.musicvis;
 
 import android.util.Log;
-import android.media.Visualizer;
+import android.media.audiofx.Visualizer;
 
 import java.util.Arrays;
 
@@ -102,7 +102,6 @@ public class AudioCapture {
             mVisualizer.release();
             mVisualizer = null;
         }
-        Log.e("AudioCapture", "release: "+this);
     }
 
     public byte[] getRawData() {
