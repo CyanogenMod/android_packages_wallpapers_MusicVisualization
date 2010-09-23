@@ -25,6 +25,7 @@
 
     <uses-feature android:name="android.software.live_wallpaper" />
     <uses-permission android:name="android.permission.RECORD_AUDIO" />
+    <uses-permission android:name="android.permission.MODIFY_AUDIO_SETTINGS" />
 
     <application
         android:label="@string/wallpapers"
