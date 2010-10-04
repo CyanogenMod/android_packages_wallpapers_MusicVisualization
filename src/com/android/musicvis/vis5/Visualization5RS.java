@@ -26,6 +26,7 @@ import android.renderscript.Allocation;
 import android.renderscript.Element;
 import android.renderscript.Primitive;
 import android.renderscript.ProgramFragment;
+import android.renderscript.ProgramRaster;
 import android.renderscript.ProgramStore;
 import android.renderscript.ProgramVertex;
 import android.renderscript.Sampler;
@@ -73,6 +74,7 @@ class Visualization5RS extends RenderScriptScene {
     private ProgramStore mPfsBackground;
     private ProgramFragment mPfBackgroundMip;
     private ProgramFragment mPfBackgroundNoMip;
+    private ProgramRaster mPr;
     private Sampler mSamplerMip;
     private Sampler mSamplerNoMip;
     private Allocation[] mTextures;
@@ -226,6 +228,13 @@ class Visualization5RS extends RenderScriptScene {
             mPfBackgroundMip = builder.create();
             mPfBackgroundMip.bindSampler(mSamplerMip, 0);
             mScript.set_gPFBackgroundMip(mPfBackgroundMip);
+        }
+
+        {
+            ProgramRaster.Builder builder = new ProgramRaster.Builder(mRS);
+            builder.setCullMode(ProgramRaster.CullMode.NONE);
+            mPr = builder.create();
+            mScript.set_gPR(mPr);
         }
 
         {

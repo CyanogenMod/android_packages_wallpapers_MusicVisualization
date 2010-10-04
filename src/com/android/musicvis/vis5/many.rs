@@ -28,6 +28,7 @@ int   gWaveCounter;
 rs_program_vertex gPVBackground;
 rs_program_fragment gPFBackgroundMip;
 rs_program_fragment gPFBackgroundNoMip;
+rs_program_raster gPR;
 
 rs_allocation gTvumeter_background;
 rs_allocation gTvumeter_peak_on;
@@ -50,7 +51,7 @@ rs_allocation gPointBuffer;
 rs_allocation gTlinetexture;
 rs_mesh gCubeMesh;
 
-#pragma rs export_var(gAngle, gPeak, gRotate, gTilt, gIdle, gWaveCounter, gPVBackground, gPFBackgroundMip, gPFBackgroundNoMip, gTvumeter_background, gTvumeter_peak_on, gTvumeter_peak_off, gTvumeter_needle, gTvumeter_black, gTvumeter_frame, gTvumeter_album, gPFSBackground, gPoints, gPointBuffer, gTlinetexture, gCubeMesh)
+#pragma rs export_var(gAngle, gPeak, gRotate, gTilt, gIdle, gWaveCounter, gPVBackground, gPFBackgroundMip, gPFBackgroundNoMip, gPR, gTvumeter_background, gTvumeter_peak_on, gTvumeter_peak_off, gTvumeter_needle, gTvumeter_black, gTvumeter_frame, gTvumeter_album, gPFSBackground, gPoints, gPointBuffer, gTlinetexture, gCubeMesh)
 #pragma rs export_func()
 
 #define RSID_POINTS 1
@@ -241,6 +242,7 @@ void drawWave(rs_matrix4x4 *ident) {
         }
     }
 
+    rsgBindProgramRaster(gPR);
     rsgBindProgramFragment(gPFBackgroundNoMip);
     rsgBindTexture(gPFBackgroundNoMip, 0, gTlinetexture);
     rsgDrawMesh(gCubeMesh);
