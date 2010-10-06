@@ -167,7 +167,7 @@ public class GenericWaveRS extends RenderScriptScene {
         mLineIdxAlloc.uploadToBufferObject();
 
         // load the texture
-        mTexture = Allocation.createFromBitmapResourceBoxed(mRS, mResources, mTexId, RGB_565(mRS), false);
+        mTexture = Allocation.createFromBitmapResource(mRS, mResources, mTexId, RGB_565(mRS), false);
         mTexture.uploadToTexture(0);
 
         mScript.set_gTlinetexture(mTexture);
