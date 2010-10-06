@@ -50,7 +50,7 @@ int root(int launchID) {
 
     rs_matrix4x4 mat1;
     float scale = 0.0041;
-    rsMatrixLoadRotate(&mat1, 0.f, 0.f, 0.f, 1.f);
+    rsMatrixLoadTranslate(&mat1, 0.f, -90.0f * scale, 0.f);
     rsMatrixScale(&mat1, scale, scale, scale);
     rsgProgramVertexLoadModelMatrix(&mat1);
 
@@ -58,13 +58,13 @@ int root(int launchID) {
     rsgBindTexture(gPFBackground, 0, gTvumeter_background);
     rsgDrawQuadTexCoords(
             -208.0f, -33.0f, 0.0f,        // space
-                0.09375f, 0.9551f,        // texture
+                0.0f, 1.0f,               // texture
             208, -33.0f, 0.0f,            // space
-                0.90625, 0.9551f,         // texture
+                1.0f, 1.0f,               // texture
             208, 200.0f, 0.0f,            // space
-                0.90625, 0.0449f,         // texture
+                1.0f, 0.0f,               // texture
             -208.0f, 200.0f, 0.0f,        // space
-                0.09375f, 0.0449f);       // texture
+                0.0f, 0.0f);              // texture
 
     // draw the peak indicator light (56x58)
     if (gPeak > 0) {
@@ -74,37 +74,37 @@ int root(int launchID) {
     }
     rsgDrawQuadTexCoords(
             140.0f, 70.0f, -1.0f,         // space
-                0.0625f, 0.953125,        // texture
+                0.0, 1.0f,                // texture
             196, 70.0f, -1.0f,            // space
-                0.9375f, 0.953125,        // texture
+                1.0f, 1.0f,               // texture
             196, 128.0f, -1.0f,           // space
-                0.9375f, 0.046875,        // texture
+                1.0f, 0.0f,               // texture
             140.0f, 128.0f, -1.0f,        // space
-                0.0625f, 0.046875);       // texture
+                0.0f, 0.0f);              // texture
 
 
 
     // Draw the needle (88x262, center of rotation at 44,217 from top left)
 
     // set matrix so point of rotation becomes origin
-    rsMatrixLoadTranslate(&mat1, 0.f, -57.0f * scale, 0.f);
+    rsMatrixLoadTranslate(&mat1, 0.f, -147.0f * scale, 0.f);
     rsMatrixRotate(&mat1, gAngle - 90.f, 0.f, 0.f, 1.f);
     rsMatrixScale(&mat1, scale, scale, scale);
     rsgProgramVertexLoadModelMatrix(&mat1);
     rsgBindTexture(gPFBackground, 0, gTvumeter_needle);
     rsgDrawQuadTexCoords(
-            -44.0f, -102.0f+57.f, 0.0f,         // space
-                .15625f, 0.755859375f,  // texture
-            44.0f, -102.0f+57.f, 0.0f,             // space
-                0.84375f, 0.755859375f,  // texture
-            44.0f, 160.0f+57.f, 0.0f,             // space
-                0.84375f, 0.244140625f,  // texture
-            -44.0f, 160.0f+57.f, 0.0f,         // space
-                0.15625f, 0.244140625f); // texture
+            -44.0f, -102.0f+57.f, 0.0f,    // space
+                0.0f, 1.0f,                // texture
+            44.0f, -102.0f+57.f, 0.0f,     // space
+                1.0f, 1.0f,                // texture
+            44.0f, 160.0f+57.f, 0.0f,      // space
+                1.0f, 0.0f,                // texture
+            -44.0f, 160.0f+57.f, 0.0f,     // space
+                0.0f, 0.0f);               // texture
 
 
     // restore matrix
-    rsMatrixLoadRotate(&mat1, 0.f, 0.f, 0.f, 1.f);
+    rsMatrixLoadTranslate(&mat1, 0.f, -90.0f * scale, 0.f);
     rsMatrixScale(&mat1, scale, scale, scale);
     rsgProgramVertexLoadModelMatrix(&mat1);
 
@@ -120,13 +120,13 @@ int root(int launchID) {
     rsgBindTexture(gPFBackground, 0, gTvumeter_frame);
     rsgDrawQuadTexCoords(
             -236.0f, -60.0f, 0.0f,           // space
-                0.0390625f, 0.783203125f,    // texture
+                0.0f, 1.0f,                  // texture
             236, -60.0f, 0.0f,               // space
-                0.9609375f, 0.783203125f,    // texture
+                1.0f, 1.0f,                  // texture
             236, 230.0f, 0.0f,               // space
-                0.9609375f, 0.216796875f,    // texture
+                1.0f, 0.0f,                  // texture
             -236.0f, 230.0f, 0.0f,           // space
-                0.0390625f, 0.216796875f);   // texture
+                0.0f, 0.0f);                 // texture
 
     return 1;
 }
