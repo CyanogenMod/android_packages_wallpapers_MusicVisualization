@@ -36,7 +36,6 @@ rs_allocation gPointBuffer;
 rs_allocation gTlinetexture;
 rs_mesh gCubeMesh;
 
-#pragma rs export_var(gYRotation, gIdle, gWaveCounter, gWidth, gPVBackground, gPFBackground, gPoints, gPointBuffer, gTlinetexture, gCubeMesh)
 #pragma rs export_func()
 
 #define RSID_POINTS 1
@@ -45,18 +44,18 @@ rs_mesh gCubeMesh;
 #define FADEOUT_FACTOR 0.95f
 #define FADEIN_LENGTH 15
 
-int fadeoutcounter = 0;
-int fadeincounter = 0;
-int wave1pos = 0;
-int wave1amp = 0;
-int wave2pos = 0;
-int wave2amp= 0;
-int wave3pos = 0;
-int wave3amp= 0;
-int wave4pos = 0;
-int wave4amp= 0;
-float idle[8192];
-int waveCounter = 0;
+static int fadeoutcounter = 0;
+static int fadeincounter = 0;
+static int wave1pos = 0;
+static int wave1amp = 0;
+static int wave2pos = 0;
+static int wave2amp= 0;
+static int wave3pos = 0;
+static int wave3amp= 0;
+static int wave4pos = 0;
+static int wave4amp= 0;
+static float idle[8192];
+static int waveCounter = 0;
 
 void makeIdleWave(float *points) {
     // show a number of superimposed moving sinewaves
