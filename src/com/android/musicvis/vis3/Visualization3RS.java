@@ -106,8 +106,8 @@ class Visualization3RS extends GenericWaveRS {
 
         // distribute the data over mWidth samples in the middle of the mPointData array
         final int outlen = mPointData.length / 8;
-        final int width = mWidth;
-        final int skip = (outlen - mWidth) / 2;
+        final int width = mWidth > outlen ? outlen : mWidth;
+        final int skip = (outlen - width) / 2;
 
         int srcidx = 0;
         int cnt = 0;

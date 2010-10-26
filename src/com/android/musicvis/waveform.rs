@@ -65,6 +65,7 @@ void makeIdleWave(float *points) {
     float amp4 = sin(0.031f * wave4amp) * 20;
     // calculate how many invisible lines there are on each side
     int skip = (1024 - gWidth) / 2;
+    if (skip < 0) skip = 0;
     int end = 1024 - skip;
     for (int i = skip; i < end; i++) {
         float val = sin(0.013f * (wave1pos + i)) * amp1
@@ -92,6 +93,7 @@ int root(int launchID) {
 
     // calculate how many invisible lines there are on each side
     int width = gWidth;
+    if (width > 1024) width = 1024;
     int skip = (1024 - width) / 2;
     int end = 1024 - skip;
 
