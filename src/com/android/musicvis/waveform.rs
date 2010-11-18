@@ -57,7 +57,7 @@ static int wave4amp= 0;
 static float idle[8192];
 static int waveCounter = 0;
 
-void makeIdleWave(float *points) {
+static void makeIdleWave(float *points) {
     // show a number of superimposed moving sinewaves
     float amp1 = sin(0.007f * wave1amp) * 120;
     float amp2 = sin(0.023f * wave2amp) * 80;

@@ -57,7 +57,7 @@ rs_mesh gCubeMesh;
 #define RSID_POINTS 1
 
 
-void drawVU(rs_matrix4x4 *ident) {
+static void drawVU(rs_matrix4x4 *ident) {
     rs_matrix4x4 mat1;
     float scale = 0.0041;
 
@@ -167,7 +167,7 @@ float autorotation = 0;
 #define FADEOUT_FACTOR 0.95f
 #define FADEIN_LENGTH 15
 
-void makeIdleWave(float *points) {
+static void makeIdleWave(float *points) {
     int i;
     // show a number of superimposed moving sinewaves
     float amp1 = sin(0.007f * wave1amp) * 120 * 1024;
@@ -186,7 +186,7 @@ void makeIdleWave(float *points) {
 }
 
 
-void drawWave(rs_matrix4x4 *ident) {
+static void drawWave(rs_matrix4x4 *ident) {
     float scale = .008f;
     rs_matrix4x4 mat1;
     rsMatrixLoad(&mat1, ident);
@@ -249,7 +249,7 @@ void drawWave(rs_matrix4x4 *ident) {
 }
 
 
-void drawVizLayer(rs_matrix4x4 *ident) {
+static void drawVizLayer(rs_matrix4x4 *ident) {
     for (int i = 0; i < 6; i++) {
         if (i & 1) {
             drawVU(ident);
