@@ -36,8 +36,6 @@ rs_allocation gPointBuffer;
 rs_allocation gTlinetexture;
 rs_mesh gCubeMesh;
 
-#pragma rs export_func()
-
 #define RSID_POINTS 1
 
 #define FADEOUT_LENGTH 100

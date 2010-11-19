@@ -34,11 +34,7 @@ rs_allocation gTvumeter_frame;
 
 rs_program_store gPFSBackground;
 
-#pragma rs export_var(gAngle, gPeak, gPVBackground, gPFBackground, gTvumeter_background, gTvumeter_peak_on, gTvumeter_peak_off, gTvumeter_needle, gTvumeter_black, gTvumeter_frame, gPFSBackground)
-#pragma rs export_func()
-
 #define RSID_POINTS 1
-
 
 int root(int launchID) {
     rsgClearColor(0.f, 0.f, 0.f, 1.f);
