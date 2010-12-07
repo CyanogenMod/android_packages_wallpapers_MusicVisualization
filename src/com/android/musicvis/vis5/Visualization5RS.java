@@ -160,7 +160,7 @@ class Visualization5RS extends RenderScriptScene {
 
     @Override
     protected ScriptC createScript() {
-        mScript = new ScriptC_many(mRS, mResources, R.raw.many, true);
+        mScript = new ScriptC_many(mRS, mResources, R.raw.many);
 
         // First set up the coordinate system and such
         ProgramVertex.Builder pvb = new ProgramVertex.Builder(mRS, null, null);
@@ -275,8 +275,8 @@ class Visualization5RS extends RenderScriptScene {
         }
 
         //  upload the vertex and index data
-        mPointAlloc.data(mPointData);
-        mLineIdxAlloc.data(mIndexData);
+        mPointAlloc.copyFrom(mPointData);
+        mLineIdxAlloc.copyFrom(mIndexData);
         mLineIdxAlloc.uploadToBufferObject();
 
         return mScript;
@@ -390,7 +390,7 @@ class Visualization5RS extends RenderScriptScene {
                 mPointData[i*8+1] = amp;
                 mPointData[i*8+5] = -amp;
             }
-            mPointAlloc.data(mPointData);
+            mPointAlloc.copyFrom(mPointData);
             mWorldState.mWaveCounter++;
         }
 

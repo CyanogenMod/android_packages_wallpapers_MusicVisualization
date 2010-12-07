@@ -97,7 +97,7 @@ class Visualization4RS extends RenderScriptScene {
     @Override
     protected ScriptC createScript() {
 
-        mScript = new ScriptC_vu(mRS, mResources, R.raw.vu, true);
+        mScript = new ScriptC_vu(mRS, mResources, R.raw.vu);
 
         // First set up the coordinate system and such
         ProgramVertex.Builder pvb = new ProgramVertex.Builder(mRS, null, null);

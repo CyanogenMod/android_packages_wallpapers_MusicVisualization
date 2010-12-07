@@ -77,7 +77,7 @@ class Visualization2RS extends GenericWaveRS {
             mPointData[i*8+1] = amp;
             mPointData[i*8+5] = -amp;
         }
-        mPointAlloc.data(mPointData);
+        mPointAlloc.copyFrom(mPointData);
     }
 
 }

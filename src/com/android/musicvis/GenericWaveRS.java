@@ -115,7 +115,7 @@ public class GenericWaveRS extends RenderScriptScene {
     @Override
     protected ScriptC createScript() {
 
-        mScript = new ScriptC_waveform(mRS, mResources, R.raw.waveform, true);
+        mScript = new ScriptC_waveform(mRS, mResources, R.raw.waveform);
 
         // set our java object as the data for the renderscript allocation
         mWorldState.yRotation = 0.0f;
@@ -162,8 +162,8 @@ public class GenericWaveRS extends RenderScriptScene {
         }
 
         //  upload the vertex and index data
-        mPointAlloc.data(mPointData);
-        mLineIdxAlloc.data(mIndexData);
+        mPointAlloc.copyFrom(mPointData);
+        mLineIdxAlloc.copyFrom(mIndexData);
         mLineIdxAlloc.uploadToBufferObject();
 
         // load the texture
