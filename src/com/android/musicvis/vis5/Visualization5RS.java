@@ -172,27 +172,38 @@ class Visualization5RS extends RenderScriptScene {
         mScript.set_gPVBackground(mPVBackground);
 
         mTextures = new Allocation[8];
-        mTextures[0] = Allocation.createFromBitmapResource(mRS, mResources, R.drawable.background, Element.RGBA_8888(mRS), true);
+        mTextures[0] = Allocation.createFromBitmapResource(mRS, mResources, R.drawable.background,
+                                                           Allocation.MipmapControl.MIPMAP_ON_SYNC_TO_TEXTURE,
+                                                           Allocation.USAGE_GRAPHICS_TEXTURE);
         mScript.set_gTvumeter_background(mTextures[0]);
-        mTextures[1] = Allocation.createFromBitmapResource(mRS, mResources, R.drawable.frame, Element.RGBA_8888(mRS), true);
+        mTextures[1] = Allocation.createFromBitmapResource(mRS, mResources, R.drawable.frame,
+                                                           Allocation.MipmapControl.MIPMAP_ON_SYNC_TO_TEXTURE,
+                                                           Allocation.USAGE_GRAPHICS_TEXTURE);
         mScript.set_gTvumeter_frame(mTextures[1]);
-        mTextures[2] = Allocation.createFromBitmapResource(mRS, mResources, R.drawable.peak_on, Element.RGBA_8888(mRS), true);
+        mTextures[2] = Allocation.createFromBitmapResource(mRS, mResources, R.drawable.peak_on,
+                                                           Allocation.MipmapControl.MIPMAP_ON_SYNC_TO_TEXTURE,
+                                                           Allocation.USAGE_GRAPHICS_TEXTURE);
         mScript.set_gTvumeter_peak_on(mTextures[2]);
-        mTextures[3] = Allocation.createFromBitmapResource(mRS, mResources, R.drawable.peak_off, Element.RGBA_8888(mRS), true);
+        mTextures[3] = Allocation.createFromBitmapResource(mRS, mResources, R.drawable.peak_off,
+                                                           Allocation.MipmapControl.MIPMAP_ON_SYNC_TO_TEXTURE,
+                                                           Allocation.USAGE_GRAPHICS_TEXTURE);
         mScript.set_gTvumeter_peak_off(mTextures[3]);
-        mTextures[4] = Allocation.createFromBitmapResource(mRS, mResources, R.drawable.needle, Element.RGBA_8888(mRS), true);
+        mTextures[4] = Allocation.createFromBitmapResource(mRS, mResources, R.drawable.needle,
+                                                           Allocation.MipmapControl.MIPMAP_ON_SYNC_TO_TEXTURE,
+                                                           Allocation.USAGE_GRAPHICS_TEXTURE);
         mScript.set_gTvumeter_needle(mTextures[4]);
-        mTextures[5] = Allocation.createFromBitmapResource(mRS, mResources, R.drawable.black, Element.RGB_565(mRS), true);
+        mTextures[5] = Allocation.createFromBitmapResource(mRS, mResources, R.drawable.black,
+                                                           Allocation.MipmapControl.MIPMAP_ON_SYNC_TO_TEXTURE,
+                                                           Allocation.USAGE_GRAPHICS_TEXTURE);
         mScript.set_gTvumeter_black(mTextures[5]);
-        mTextures[6] = Allocation.createFromBitmapResource(mRS, mResources, R.drawable.albumart, Element.RGBA_8888(mRS), true);
+        mTextures[6] = Allocation.createFromBitmapResource(mRS, mResources, R.drawable.albumart,
+                                                           Allocation.MipmapControl.MIPMAP_ON_SYNC_TO_TEXTURE,
+                                                           Allocation.USAGE_GRAPHICS_TEXTURE);
         mScript.set_gTvumeter_album(mTextures[6]);
-        mTextures[7] = Allocation.createFromBitmapResource(mRS, mResources, R.drawable.fire, Element.RGB_565(mRS), false);
+        mTextures[7] = Allocation.createFromBitmapResource(mRS, mResources, R.drawable.fire,
+                                                           Allocation.MipmapControl.MIPMAP_ON_SYNC_TO_TEXTURE,
+                                                           Allocation.USAGE_GRAPHICS_TEXTURE);
         mScript.set_gTlinetexture(mTextures[7]);
-
-        final int count = mTextures.length;
-        for (int i = 0; i < count; i++) {
-            mTextures[i].uploadToTexture(0);
-        }
 
         {
             Sampler.Builder builder = new Sampler.Builder(mRS);
