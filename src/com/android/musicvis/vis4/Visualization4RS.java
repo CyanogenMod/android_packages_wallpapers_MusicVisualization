@@ -111,23 +111,18 @@ class Visualization4RS extends RenderScriptScene {
         updateWave();
 
         mTextures = new Allocation[6];
-        mTextures[0] = Allocation.createFromBitmapResource(mRS, mResources, R.drawable.background, Element.RGBA_8888(mRS), false);
+        mTextures[0] = Allocation.createFromBitmapResource(mRS, mResources, R.drawable.background);
         mScript.set_gTvumeter_background(mTextures[0]);
-        mTextures[1] = Allocation.createFromBitmapResource(mRS, mResources, R.drawable.frame, Element.RGBA_8888(mRS), false);
+        mTextures[1] = Allocation.createFromBitmapResource(mRS, mResources, R.drawable.frame);
         mScript.set_gTvumeter_frame(mTextures[1]);
-        mTextures[2] = Allocation.createFromBitmapResource(mRS, mResources, R.drawable.peak_on, Element.RGBA_8888(mRS), false);
+        mTextures[2] = Allocation.createFromBitmapResource(mRS, mResources, R.drawable.peak_on);
         mScript.set_gTvumeter_peak_on(mTextures[2]);
-        mTextures[3] = Allocation.createFromBitmapResource(mRS, mResources, R.drawable.peak_off, Element.RGBA_8888(mRS), false);
+        mTextures[3] = Allocation.createFromBitmapResource(mRS, mResources, R.drawable.peak_off);
         mScript.set_gTvumeter_peak_off(mTextures[3]);
-        mTextures[4] = Allocation.createFromBitmapResource(mRS, mResources, R.drawable.needle, Element.RGBA_8888(mRS), false);
+        mTextures[4] = Allocation.createFromBitmapResource(mRS, mResources, R.drawable.needle);
         mScript.set_gTvumeter_needle(mTextures[4]);
-        mTextures[5] = Allocation.createFromBitmapResource(mRS, mResources, R.drawable.black, Element.RGB_565(mRS), false);
+        mTextures[5] = Allocation.createFromBitmapResource(mRS, mResources, R.drawable.black);
         mScript.set_gTvumeter_black(mTextures[5]);
-
-        final int count = mTextures.length;
-        for (int i = 0; i < count; i++) {
-            mTextures[i].uploadToTexture(0);
-        }
 
         Sampler.Builder samplerBuilder = new Sampler.Builder(mRS);
         samplerBuilder.setMin(LINEAR);
