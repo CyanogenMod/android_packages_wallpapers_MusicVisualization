@@ -142,7 +142,9 @@ public class GenericWaveRS extends RenderScriptScene {
         final Mesh.AllocationBuilder meshBuilder = new Mesh.AllocationBuilder(mRS);
         meshBuilder.addVertexAllocation(mVertexBuffer.getAllocation());
         // Create the Allocation for the indices
-        mLineIdxAlloc = Allocation.createSized(mRS, Element.U16(mRS), mIndexData.length);
+        mLineIdxAlloc = Allocation.createSized(mRS, Element.U16(mRS), mIndexData.length,
+                                               Allocation.USAGE_GRAPHICS_VERTEX |
+                                               Allocation.USAGE_SCRIPT);
         // This will be a line mesh
         meshBuilder.addIndexAllocation(mLineIdxAlloc, Primitive.LINE);
 
@@ -164,7 +166,7 @@ public class GenericWaveRS extends RenderScriptScene {
         //  upload the vertex and index data
         mPointAlloc.copyFrom(mPointData);
         mLineIdxAlloc.copyFrom(mIndexData);
-        mLineIdxAlloc.uploadToBufferObject();
+        mLineIdxAlloc.syncAll(Allocation.USAGE_SCRIPT);
 
         // load the texture
         mTexture = Allocation.createFromBitmapResource(mRS, mResources, mTexId);
