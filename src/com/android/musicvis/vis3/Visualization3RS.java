@@ -26,7 +26,7 @@ import android.graphics.Rect;
 import android.os.Handler;
 import android.renderscript.Allocation;
 import android.renderscript.Element;
-import android.renderscript.Primitive;
+import android.renderscript.Mesh.Primitive;
 import android.renderscript.ProgramVertex;
 import android.renderscript.ScriptC;
 import android.renderscript.Type;

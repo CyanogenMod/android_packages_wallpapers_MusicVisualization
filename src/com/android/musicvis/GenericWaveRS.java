@@ -22,15 +22,8 @@ import static android.renderscript.Sampler.Value.WRAP;
 
 import android.os.Handler;
 import android.os.SystemClock;
-import android.renderscript.Allocation;
-import android.renderscript.Element;
-import android.renderscript.Primitive;
-import android.renderscript.ProgramFragment;
-import android.renderscript.ProgramVertex;
-import android.renderscript.Sampler;
-import android.renderscript.ScriptC;
-import android.renderscript.Mesh;
-import android.renderscript.Type;
+import android.renderscript.Mesh.Primitive;
+import android.renderscript.*;
 import android.renderscript.Element.Builder;
 import android.util.Log;
 
@@ -71,7 +64,7 @@ public class GenericWaveRS extends RenderScriptScene {
     private short [] mIndexData = new short[1024*2];
 
     private ProgramVertex mPVBackground;
-    private ProgramVertex.MatrixAllocation mPVAlloc;
+    private ProgramVertexFixedFunction.Constants mPVAlloc;
 
     protected AudioCapture mAudioCapture = null;
     protected int [] mVizData = new int[1024];
@@ -108,7 +101,9 @@ public class GenericWaveRS extends RenderScriptScene {
         super.resize(width, height);
         mWorldState.width = width;
         if (mPVAlloc != null) {
-            mPVAlloc.setupProjectionNormalized(mWidth, mHeight);
+            Matrix4f proj = new Matrix4f();
+            proj.loadProjectionNormalized(mWidth, mHeight);
+            mPVAlloc.setProjection(proj);
         }
     }
 
@@ -128,11 +123,13 @@ public class GenericWaveRS extends RenderScriptScene {
         //  - combine the two in to a mesh
 
         // First set up the coordinate system and such
-        ProgramVertex.Builder pvb = new ProgramVertex.Builder(mRS, null, null);
+        ProgramVertexFixedFunction.Builder pvb = new ProgramVertexFixedFunction.Builder(mRS);
         mPVBackground = pvb.create();
-        mPVAlloc = new ProgramVertex.MatrixAllocation(mRS);
-        mPVBackground.bindAllocation(mPVAlloc);
-        mPVAlloc.setupProjectionNormalized(mWidth, mHeight);
+        mPVAlloc = new ProgramVertexFixedFunction.Constants(mRS);
+        ((ProgramVertexFixedFunction)mPVBackground).bindConstants(mPVAlloc);
+        Matrix4f proj = new Matrix4f();
+        proj.loadProjectionNormalized(mWidth, mHeight);
+        mPVAlloc.setProjection(proj);
 
         mScript.set_gPVBackground(mPVBackground);
 
@@ -146,7 +143,7 @@ public class GenericWaveRS extends RenderScriptScene {
                                                Allocation.USAGE_GRAPHICS_VERTEX |
                                                Allocation.USAGE_SCRIPT);
         // This will be a line mesh
-        meshBuilder.addIndexAllocation(mLineIdxAlloc, Primitive.LINE);
+        meshBuilder.addIndexSetAllocation(mLineIdxAlloc, Primitive.LINE);
 
         // Create the Allocation for the vertices
         mCubeMesh = meshBuilder.create();
@@ -177,15 +174,15 @@ public class GenericWaveRS extends RenderScriptScene {
          * create a program fragment to use the texture
          */
         Sampler.Builder samplerBuilder = new Sampler.Builder(mRS);
-        samplerBuilder.setMin(LINEAR);
-        samplerBuilder.setMag(LINEAR);
+        samplerBuilder.setMinification(LINEAR);
+        samplerBuilder.setMagnification(LINEAR);
         samplerBuilder.setWrapS(WRAP);
         samplerBuilder.setWrapT(WRAP);
         mSampler = samplerBuilder.create();
 
-        ProgramFragment.Builder builder = new ProgramFragment.Builder(mRS);
-        builder.setTexture(ProgramFragment.Builder.EnvMode.REPLACE,
-                           ProgramFragment.Builder.Format.RGBA, 0);
+        ProgramFragmentFixedFunction.Builder builder = new ProgramFragmentFixedFunction.Builder(mRS);
+        builder.setTexture(ProgramFragmentFixedFunction.Builder.EnvMode.REPLACE,
+                           ProgramFragmentFixedFunction.Builder.Format.RGBA, 0);
         mPfBackground = builder.create();
         mPfBackground.bindSampler(mSampler, 0);
 

@@ -22,17 +22,7 @@ import com.android.musicvis.ScriptField_Vertex;
 import com.android.musicvis.AudioCapture;
 
 import android.os.Handler;
-import android.renderscript.Allocation;
-import android.renderscript.Element;
-import android.renderscript.Primitive;
-import android.renderscript.ProgramFragment;
-import android.renderscript.ProgramRaster;
-import android.renderscript.ProgramStore;
-import android.renderscript.ProgramVertex;
-import android.renderscript.Sampler;
-import android.renderscript.ScriptC;
-import android.renderscript.Mesh;
-import android.renderscript.Type;
+import android.renderscript.*;
 import android.renderscript.Element.Builder;
 import android.renderscript.ProgramStore.BlendDstFunc;
 import android.renderscript.ProgramStore.BlendSrcFunc;
@@ -80,7 +70,7 @@ class Visualization5RS extends RenderScriptScene {
     private Allocation[] mTextures;
 
     private ProgramVertex mPVBackground;
-    private ProgramVertex.MatrixAllocation mPVAlloc;
+    private ProgramVertexFixedFunction.Constants mPVAlloc;
 
     private Mesh mCubeMesh;
 
@@ -124,7 +114,9 @@ class Visualization5RS extends RenderScriptScene {
     public void resize(int width, int height) {
         super.resize(width, height);
         if (mPVAlloc != null) {
-            mPVAlloc.setupProjectionNormalized(width, height);
+            Matrix4f proj = new Matrix4f();
+            proj.loadProjectionNormalized(width, height);
+            mPVAlloc.setProjection(proj);
         }
         mWorldState.mTilt = -20;
     }
@@ -163,11 +155,13 @@ class Visualization5RS extends RenderScriptScene {
         mScript = new ScriptC_many(mRS, mResources, R.raw.many);
 
         // First set up the coordinate system and such
-        ProgramVertex.Builder pvb = new ProgramVertex.Builder(mRS, null, null);
+        ProgramVertexFixedFunction.Builder pvb = new ProgramVertexFixedFunction.Builder(mRS);
         mPVBackground = pvb.create();
-        mPVAlloc = new ProgramVertex.MatrixAllocation(mRS);
-        mPVBackground.bindAllocation(mPVAlloc);
-        mPVAlloc.setupProjectionNormalized(mWidth, mHeight);
+        mPVAlloc = new ProgramVertexFixedFunction.Constants(mRS);
+        ((ProgramVertexFixedFunction)mPVBackground).bindConstants(mPVAlloc);
+        Matrix4f proj = new Matrix4f();
+        proj.loadProjectionNormalized(mWidth, mHeight);
+        mPVAlloc.setProjection(proj);
 
         mScript.set_gPVBackground(mPVBackground);
 
@@ -207,8 +201,8 @@ class Visualization5RS extends RenderScriptScene {
 
         {
             Sampler.Builder builder = new Sampler.Builder(mRS);
-            builder.setMin(Value.LINEAR);
-            builder.setMag(Value.LINEAR);
+            builder.setMinification(Value.LINEAR);
+            builder.setMagnification(Value.LINEAR);
             builder.setWrapS(Value.WRAP);
             builder.setWrapT(Value.WRAP);
             mSamplerNoMip = builder.create();
@@ -216,26 +210,26 @@ class Visualization5RS extends RenderScriptScene {
 
         {
             Sampler.Builder builder = new Sampler.Builder(mRS);
-            builder.setMin(Value.LINEAR_MIP_LINEAR);
-            builder.setMag(Value.LINEAR);
+            builder.setMinification(Value.LINEAR_MIP_LINEAR);
+            builder.setMagnification(Value.LINEAR);
             builder.setWrapS(Value.WRAP);
             builder.setWrapT(Value.WRAP);
             mSamplerMip = builder.create();
         }
 
         {
-            ProgramFragment.Builder builder = new ProgramFragment.Builder(mRS);
-            builder.setTexture(ProgramFragment.Builder.EnvMode.REPLACE,
-                               ProgramFragment.Builder.Format.RGBA, 0);
+            ProgramFragmentFixedFunction.Builder builder = new ProgramFragmentFixedFunction.Builder(mRS);
+            builder.setTexture(ProgramFragmentFixedFunction.Builder.EnvMode.REPLACE,
+                               ProgramFragmentFixedFunction.Builder.Format.RGBA, 0);
             mPfBackgroundNoMip = builder.create();
             mPfBackgroundNoMip.bindSampler(mSamplerNoMip, 0);
             mScript.set_gPFBackgroundNoMip(mPfBackgroundNoMip);
         }
 
         {
-            ProgramFragment.Builder builder = new ProgramFragment.Builder(mRS);
-            builder.setTexture(ProgramFragment.Builder.EnvMode.REPLACE,
-                               ProgramFragment.Builder.Format.RGBA, 0);
+            ProgramFragmentFixedFunction.Builder builder = new ProgramFragmentFixedFunction.Builder(mRS);
+            builder.setTexture(ProgramFragmentFixedFunction.Builder.EnvMode.REPLACE,
+                               ProgramFragmentFixedFunction.Builder.Format.RGBA, 0);
             mPfBackgroundMip = builder.create();
             mPfBackgroundMip.bindSampler(mSamplerMip, 0);
             mScript.set_gPFBackgroundMip(mPfBackgroundMip);
@@ -249,12 +243,12 @@ class Visualization5RS extends RenderScriptScene {
         }
 
         {
-            ProgramStore.Builder builder = new ProgramStore.Builder(mRS, null, null);
+            ProgramStore.Builder builder = new ProgramStore.Builder(mRS);
             builder.setDepthFunc(ProgramStore.DepthFunc.EQUAL);
             //builder.setBlendFunc(BlendSrcFunc.SRC_ALPHA, BlendDstFunc.ONE_MINUS_SRC_ALPHA);
             builder.setBlendFunc(BlendSrcFunc.ONE, BlendDstFunc.ONE_MINUS_SRC_ALPHA);
-            builder.setDitherEnable(true); // without dithering there is severe banding
-            builder.setDepthMask(false);
+            builder.setDitherEnabled(true); // without dithering there is severe banding
+            builder.setDepthMaskEnabled(false);
             mPfsBackground = builder.create();
 
             mScript.set_gPFSBackground(mPfsBackground);
@@ -270,7 +264,7 @@ class Visualization5RS extends RenderScriptScene {
                                                Allocation.USAGE_SCRIPT |
                                                Allocation.USAGE_GRAPHICS_VERTEX);
         // This will be a line mesh
-        meshBuilder.addIndexAllocation(mLineIdxAlloc, Primitive.LINE);
+        meshBuilder.addIndexSetAllocation(mLineIdxAlloc, Mesh.Primitive.LINE);
 
         // Create the Allocation for the vertices
         mCubeMesh = meshBuilder.create();

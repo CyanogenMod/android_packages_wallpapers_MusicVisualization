@@ -25,14 +25,7 @@ import com.android.musicvis.RenderScriptScene;
 import com.android.musicvis.AudioCapture;
 
 import android.os.Handler;
-import android.renderscript.Allocation;
-import android.renderscript.Element;
-import android.renderscript.ProgramFragment;
-import android.renderscript.ProgramStore;
-import android.renderscript.ProgramVertex;
-import android.renderscript.Sampler;
-import android.renderscript.ScriptC;
-import android.renderscript.Type;
+import android.renderscript.*;
 import android.renderscript.ProgramStore.BlendDstFunc;
 import android.renderscript.ProgramStore.BlendSrcFunc;
 
@@ -69,7 +62,7 @@ class Visualization4RS extends RenderScriptScene {
     private Allocation[] mTextures;
 
     private ProgramVertex mPVBackground;
-    private ProgramVertex.MatrixAllocation mPVAlloc;
+    private ProgramVertexFixedFunction.Constants mPVAlloc;
 
     private AudioCapture mAudioCapture = null;
     private int [] mVizData = new int[1024];
@@ -90,7 +83,9 @@ class Visualization4RS extends RenderScriptScene {
     public void resize(int width, int height) {
         super.resize(width, height);
         if (mPVAlloc != null) {
-            mPVAlloc.setupProjectionNormalized(width, height);
+            Matrix4f proj = new Matrix4f();
+            proj.loadProjectionNormalized(width, height);
+            mPVAlloc.setProjection(proj);
         }
     }
 
@@ -100,11 +95,13 @@ class Visualization4RS extends RenderScriptScene {
         mScript = new ScriptC_vu(mRS, mResources, R.raw.vu);
 
         // First set up the coordinate system and such
-        ProgramVertex.Builder pvb = new ProgramVertex.Builder(mRS, null, null);
+        ProgramVertexFixedFunction.Builder pvb = new ProgramVertexFixedFunction.Builder(mRS);
         mPVBackground = pvb.create();
-        mPVAlloc = new ProgramVertex.MatrixAllocation(mRS);
-        mPVBackground.bindAllocation(mPVAlloc);
-        mPVAlloc.setupProjectionNormalized(mWidth, mHeight);
+        mPVAlloc = new ProgramVertexFixedFunction.Constants(mRS);
+        ((ProgramVertexFixedFunction)mPVBackground).bindConstants(mPVAlloc);
+        Matrix4f proj = new Matrix4f();
+        proj.loadProjectionNormalized(mWidth, mHeight);
+        mPVAlloc.setProjection(proj);
 
         mScript.set_gPVBackground(mPVBackground);
 
@@ -125,16 +122,16 @@ class Visualization4RS extends RenderScriptScene {
         mScript.set_gTvumeter_black(mTextures[5]);
 
         Sampler.Builder samplerBuilder = new Sampler.Builder(mRS);
-        samplerBuilder.setMin(LINEAR);
-        samplerBuilder.setMag(LINEAR);
+        samplerBuilder.setMinification(LINEAR);
+        samplerBuilder.setMagnification(LINEAR);
         samplerBuilder.setWrapS(WRAP);
         samplerBuilder.setWrapT(WRAP);
         mSampler = samplerBuilder.create();
 
         {
-            ProgramFragment.Builder builder = new ProgramFragment.Builder(mRS);
-            builder.setTexture(ProgramFragment.Builder.EnvMode.REPLACE,
-                               ProgramFragment.Builder.Format.RGBA, 0);
+            ProgramFragmentFixedFunction.Builder builder = new ProgramFragmentFixedFunction.Builder(mRS);
+            builder.setTexture(ProgramFragmentFixedFunction.Builder.EnvMode.REPLACE,
+                               ProgramFragmentFixedFunction.Builder.Format.RGBA, 0);
             mPfBackground = builder.create();
             mPfBackground.bindSampler(mSampler, 0);
 
@@ -142,12 +139,12 @@ class Visualization4RS extends RenderScriptScene {
         }
 
         {
-            ProgramStore.Builder builder = new ProgramStore.Builder(mRS, null, null);
+            ProgramStore.Builder builder = new ProgramStore.Builder(mRS);
             builder.setDepthFunc(ALWAYS);
             //builder.setBlendFunc(BlendSrcFunc.SRC_ALPHA, BlendDstFunc.ONE_MINUS_SRC_ALPHA);
             builder.setBlendFunc(BlendSrcFunc.ONE, BlendDstFunc.ONE_MINUS_SRC_ALPHA);
-            builder.setDitherEnable(true); // without dithering there is severe banding
-            builder.setDepthMask(false);
+            builder.setDitherEnabled(true); // without dithering there is severe banding
+            builder.setDepthMaskEnabled(false);
             mPfsBackground = builder.create();
 
             mScript.set_gPFSBackground(mPfsBackground);
