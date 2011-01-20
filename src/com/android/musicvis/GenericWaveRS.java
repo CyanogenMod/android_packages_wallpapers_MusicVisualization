@@ -161,7 +161,7 @@ public class GenericWaveRS extends RenderScriptScene {
         }
 
         //  upload the vertex and index data
-        mPointAlloc.copyFrom(mPointData);
+        mPointAlloc.copyFromUnchecked(mPointData);
         mLineIdxAlloc.copyFrom(mIndexData);
         mLineIdxAlloc.syncAll(Allocation.USAGE_SCRIPT);
 
