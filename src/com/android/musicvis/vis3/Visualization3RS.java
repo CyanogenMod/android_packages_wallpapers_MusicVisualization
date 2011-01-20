@@ -122,7 +122,7 @@ class Visualization3RS extends GenericWaveRS {
                 cnt -= width;
             }
         }
-        mPointAlloc.copyFrom(mPointData);
+        mPointAlloc.copyFromUnchecked(mPointData);
     }
 
 }

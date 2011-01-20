@@ -282,7 +282,7 @@ class Visualization5RS extends RenderScriptScene {
         }
 
         //  upload the vertex and index data
-        mPointAlloc.copyFrom(mPointData);
+        mPointAlloc.copyFromUnchecked(mPointData);
         mLineIdxAlloc.copyFrom(mIndexData);
         mLineIdxAlloc.syncAll(Allocation.USAGE_SCRIPT);
 
@@ -397,7 +397,7 @@ class Visualization5RS extends RenderScriptScene {
                 mPointData[i*8+1] = amp;
                 mPointData[i*8+5] = -amp;
             }
-            mPointAlloc.copyFrom(mPointData);
+            mPointAlloc.copyFromUnchecked(mPointData);
             mWorldState.mWaveCounter++;
         }
 
