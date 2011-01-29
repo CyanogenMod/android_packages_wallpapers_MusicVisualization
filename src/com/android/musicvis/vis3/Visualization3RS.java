@@ -75,8 +75,10 @@ class Visualization3RS extends GenericWaveRS {
 
         int len = 0;
         if (mAudioCapture != null) {
-            mVizData = mAudioCapture.getFormattedData(64, 1);
-            len = mVizData.length;
+            mVizData = mAudioCapture.getFormattedData(1, 1);
+            // the really high frequencies aren't that interesting for music,
+            // so just chop those off and use only the lower half of the spectrum
+            len = mVizData.length / 2;
         }
         if (len == 0) {
             if (mWorldState.idle == 0) {
@@ -86,6 +88,8 @@ class Visualization3RS extends GenericWaveRS {
             return;
         }
 
+        len /= 2; // the bins are comprised of 2 values each
+
         if (len > mAnalyzer.length) len = mAnalyzer.length;
 
         if (mWorldState.idle != 0) {
@@ -93,8 +97,11 @@ class Visualization3RS extends GenericWaveRS {
             updateWorldState();
         }
 
-        for (int i = 0; i < len; i++) {
-            short newval = (short)(mVizData[i] * (i/16+2));
+        for (int i = 1; i < len - 1; i++) {
+            int val1 = mVizData[i * 2];
+            int val2 = mVizData[i * 2 + 1];
+            int val = val1 * val1 + val2 * val2;
+            short newval = (short)(val * (i/16+1));
             short oldval = mAnalyzer[i];
             if (newval >= oldval - 800) {
                 // use new high value
@@ -112,11 +119,11 @@ class Visualization3RS extends GenericWaveRS {
         int srcidx = 0;
         int cnt = 0;
         for (int i = 0; i < width; i++) {
-            float val = mAnalyzer[srcidx] / 50;
+            float val = mAnalyzer[srcidx] / 8;
             if (val < 1f && val > -1f) val = 1;
             mPointData[(i + skip) * 8 + 1] = val;
             mPointData[(i + skip) * 8 + 5] = -val;
-            cnt += mAnalyzer.length;
+            cnt += len;
             if (cnt > width) {
                 srcidx++;
                 cnt -= width;
