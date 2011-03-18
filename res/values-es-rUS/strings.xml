@@ -23,6 +23,6 @@
     <string name="author" msgid="6199067265817633685">"Google"</string>
     <string name="vis2_desc" msgid="192540837551311681">"Dibuja las ondas sonoras de cualquier pista de música que se esté reproduciendo actualmente."</string>
     <string name="vis3_desc" msgid="3878566533630652215">"Muestra el espectro de frecuencia de cualquier pista de música que se esté reproduciendo actualmente."</string>
-    <string name="vis4_desc" msgid="2752246332053894804">"Simula un medidor de sonido análogo."</string>
-    <string name="vis5_desc" msgid="4777817231155032917">"Toda la visualizaciones de música juntas, moviendose suavemente en 3D."</string>
+    <string name="vis4_desc" msgid="2752246332053894804">"Simula un medidor de sonido analógico."</string>
+    <string name="vis5_desc" msgid="4777817231155032917">"Toda la visualizaciones de música juntas, girando lentamente en 3D."</string>
 </resources>
