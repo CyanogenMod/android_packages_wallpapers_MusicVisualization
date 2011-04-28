@@ -258,7 +258,7 @@ static void drawVizLayer(rs_matrix4x4 *ident) {
 }
 
 
-int root(int launchID) {
+int root(void) {
     rsgClearColor(0.f, 0.f, 0.f, 1.f);
 
     rsgBindProgramVertex(gPVBackground);

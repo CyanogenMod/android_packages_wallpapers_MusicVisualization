@@ -84,7 +84,7 @@ static void makeIdleWave(float *points) {
     wave4amp++;
 }
 
-int root(int launchID) {
+int root(void) {
     rsgClearColor(0.f, 0.f, 0.f, 1.f);
 
     int i;

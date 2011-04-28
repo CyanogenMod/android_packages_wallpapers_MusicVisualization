@@ -36,7 +36,7 @@ rs_program_store gPFSBackground;
 
 #define RSID_POINTS 1
 
-int root(int launchID) {
+int root(void) {
     rsgClearColor(0.f, 0.f, 0.f, 1.f);
 
     // Draw the visualizer.
