@@ -19,10 +19,9 @@
 
 <resources xmlns:android="http://schemas.android.com/apk/res/android"
     xmlns:xliff="urn:oasis:names:tc:xliff:document:1.2">
-    <string name="wallpapers" msgid="7646602778647576267">"Music Visualization Wallpapers"</string>
-    <string name="author" msgid="6199067265817633685">"Google"</string>
-    <string name="vis2_desc" msgid="192540837551311681">"Zeichnet die Schallwelle jedes zurzeit abgespielten Musiktitels."</string>
-    <string name="vis3_desc" msgid="3878566533630652215">"Stellt das Frequenzspektrum jedes zurzeit abgespielten Musiktitels dar."</string>
-    <string name="vis4_desc" msgid="2752246332053894804">"Simuliert einen analogen Schallpegelmesser."</string>
-    <string name="vis5_desc" msgid="4777817231155032917">"Alle Musikvisualisierungen zusammen, sich langsam in 3D drehend"</string>
+    <string name="wallpaper_vis1" msgid="1638523041121667391">"Penampak"</string>
+    <string name="wallpaper_vis2" msgid="4565736588102466989">"Bentuk gelombang"</string>
+    <string name="wallpaper_vis3" msgid="3007445671726137442">"Spektrum"</string>
+    <string name="wallpaper_vis4" msgid="6050134144984656120">"Meter VU"</string>
+    <string name="wallpaper_vis5" msgid="6639280366165624426">"Banyak"</string>
 </resources>
