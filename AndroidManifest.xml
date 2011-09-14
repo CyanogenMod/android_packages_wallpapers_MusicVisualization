@@ -31,6 +31,7 @@
         android:label="@string/wallpapers"
         android:icon="@drawable/ic_launcher_wallpaper">
 
+        <!-- Visualizer Wallpaper -->
         <!-- this wallpaper isn't very good, so disable it (using android:enabled=false doesn't work here for some reason)
         <service
             android:label="@string/wallpaper_vis1"
@@ -45,6 +46,7 @@
         </service>
         -->
 
+        <!-- Waveform Wallpaper -->
         <service
             android:label="@string/wallpaper_vis2"
             android:name=".vis2.Visualization2"
@@ -57,6 +59,7 @@
             <meta-data android:name="android.service.wallpaper" android:resource="@xml/vis2" />
         </service>
 
+        <!-- Spectrum Wallpaper -->
         <service
             android:label="@string/wallpaper_vis3"
             android:name=".vis3.Visualization3"
@@ -69,6 +72,7 @@
             <meta-data android:name="android.service.wallpaper" android:resource="@xml/vis3" />
         </service>
 
+        <!-- VU Meter Wallpaper -->
         <service
             android:label="@string/wallpaper_vis4"
             android:name=".vis4.Visualization4"
@@ -81,6 +85,7 @@
             <meta-data android:name="android.service.wallpaper" android:resource="@xml/vis4" />
         </service>
 
+        <!-- Many Wallpaper -->
         <service
             android:label="@string/wallpaper_vis5"
             android:name=".vis5.Visualization5"
