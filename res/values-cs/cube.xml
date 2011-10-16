@@ -17,11 +17,10 @@
 */
  -->
 
-<resources xmlns:android="http://schemas.android.com/apk/res/android"
-    xmlns:xliff="urn:oasis:names:tc:xliff:document:1.2">
+<resources xmlns:android="http://schemas.android.com/apk/res/android" xmlns:xliff="urn:oasis:names:tc:xliff:document:1.2">
     <string name="wallpaper_vis1" msgid="1638523041121667391">"Vizualizér"</string>
-    <string name="wallpaper_vis2" msgid="4565736588102466989">"Tvary vln"</string>
+    <string name="wallpaper_vis2" msgid="4565736588102466989">"Křivky"</string>
     <string name="wallpaper_vis3" msgid="3007445671726137442">"Spektrum"</string>
-    <string name="wallpaper_vis4" msgid="6050134144984656120">"VU metr"</string>
+    <string name="wallpaper_vis4" msgid="6050134144984656120">"VU měřič"</string>
     <string name="wallpaper_vis5" msgid="6639280366165624426">"Mnoho"</string>
 </resources>
