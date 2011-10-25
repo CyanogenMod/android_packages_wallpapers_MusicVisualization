@@ -22,7 +22,7 @@
     <string name="wallpapers" msgid="7646602778647576267">"Music Visualization 배경화면"</string>
     <string name="author" msgid="6199067265817633685">"Google"</string>
     <string name="vis2_desc" msgid="192540837551311681">"현재 재생 중인 음악 트랙의 음파를 그립니다."</string>
-    <string name="vis3_desc" msgid="3878566533630652215">"현재 재생 중인 음악 트랙의 주파수 스펙트럼을 표시합니다."</string>
+    <string name="vis3_desc" msgid="3878566533630652215">"현재 재생 중인 음악 트랙의 주파수 스펙트럼"</string>
     <string name="vis4_desc" msgid="2752246332053894804">"아날로그 사운드 측정기를 시뮬레이션합니다."</string>
     <string name="vis5_desc" msgid="4777817231155032917">"음악이 모두 시각화되어 3D로 천천히 회전합니다."</string>
 </resources>
