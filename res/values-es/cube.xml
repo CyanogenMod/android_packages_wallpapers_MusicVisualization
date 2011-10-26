@@ -21,7 +21,7 @@
     xmlns:xliff="urn:oasis:names:tc:xliff:document:1.2">
     <string name="wallpaper_vis1" msgid="1638523041121667391">"Visualizador"</string>
     <string name="wallpaper_vis2" msgid="4565736588102466989">"Forma de ola"</string>
-    <string name="wallpaper_vis3" msgid="3007445671726137442">"Espectro"</string>
+    <string name="wallpaper_vis3" msgid="3007445671726137442">"Espectro de frecuencia"</string>
     <string name="wallpaper_vis4" msgid="6050134144984656120">"Indicador de volumen"</string>
     <string name="wallpaper_vis5" msgid="6639280366165624426">"Varios"</string>
 </resources>
