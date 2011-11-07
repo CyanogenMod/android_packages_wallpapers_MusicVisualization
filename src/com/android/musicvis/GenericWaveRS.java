@@ -60,8 +60,8 @@ public class GenericWaveRS extends RenderScriptScene {
     protected float [] mPointData = new float[1024*8];
 
     private Allocation mLineIdxAlloc;
-    // 2 indices per line
-    private short [] mIndexData = new short[1024*2];
+    // 2 initial, plus one for each triangle, 2 triangles per sample
+    private short [] mIndexData = new short[2+1024*2];
 
     private ProgramVertex mPVBackground;
     private ProgramVertexFixedFunction.Constants mPVAlloc;
@@ -142,8 +142,8 @@ public class GenericWaveRS extends RenderScriptScene {
         mLineIdxAlloc = Allocation.createSized(mRS, Element.U16(mRS), mIndexData.length,
                                                Allocation.USAGE_GRAPHICS_VERTEX |
                                                Allocation.USAGE_SCRIPT);
-        // This will be a line mesh
-        meshBuilder.addIndexSetAllocation(mLineIdxAlloc, Primitive.LINE);
+        // This will be a triangle strip mesh
+        meshBuilder.addIndexSetAllocation(mLineIdxAlloc, Primitive.TRIANGLE_STRIP);
 
         // Create the Allocation for the vertices
         mCubeMesh = meshBuilder.create();

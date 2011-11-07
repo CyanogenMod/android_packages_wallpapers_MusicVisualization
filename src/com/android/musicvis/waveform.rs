@@ -62,12 +62,9 @@ static void makeIdleWave(float *points) {
     float amp3 = sin(0.011f * wave3amp) * 40;
     float amp4 = sin(0.031f * wave4amp) * 20;
     // calculate how many invisible lines there are on each side
-    int skip = (1024 - gWidth) / 2;
-    if (skip < 0) skip = 0;
-    int end = 1024 - skip;
-    for (int i = skip; i < end; i++) {
-        float val = sin(0.013f * (wave1pos + i)) * amp1
-                  + sin(0.029f * (wave2pos + i)) * amp2;
+    for (int i = 0; i < 1024; i++) {
+        float val = fabs(sin(0.013f * (wave1pos + i)) * amp1
+                  + sin(0.029f * (wave2pos + i)) * amp2);
         float off = sin(0.005f * (wave3pos + i)) * amp3
                   + sin(0.017f * (wave4pos + i)) * amp4;
         if (val < 2.f && val > -2.f) val = 2.f;
@@ -89,19 +86,13 @@ int root(void) {
 
     int i;
 
-    // calculate how many invisible lines there are on each side
-    int width = gWidth;
-    if (width > 1024) width = 1024;
-    int skip = (1024 - width) / 2;
-    int end = 1024 - skip;
-
     if (gIdle) {
 
         // idle state animation
         float *points = (float*)gPoints;
         if (fadeoutcounter > 0) {
             // fade waveform to 0
-            for (i = skip; i < end; i++) {
+            for (i = 0; i < 1024; i++) {
                 float val = fabs(points[i*8+1]);
                 val = val * FADEOUT_FACTOR;
                 if (val < 2.f) val = 2.f;
@@ -127,7 +118,7 @@ int root(void) {
             if (waveCounter != gWaveCounter) {
                 waveCounter = gWaveCounter;
                 float *points = (float*)gPoints;
-                for (i = skip; i < end; i++) {
+                for (i = 0; i < 1024; i++) {
                     float val = fabs(points[i*8+1]);
                     points[i*8+1] = (val * (FADEIN_LENGTH - fadeincounter) + idle[i*8+1] * fadeincounter) / FADEIN_LENGTH;
                     points[i*8+5] = (-val * (FADEIN_LENGTH - fadeincounter) + idle[i*8+5] * fadeincounter) / FADEIN_LENGTH;
@@ -158,7 +149,7 @@ int root(void) {
     rsMatrixScale(&mat1, scale, scale, scale);
     rsgProgramVertexLoadModelMatrix(&mat1);
 
-    rsgDrawMesh(gCubeMesh, 0, skip * 2, width * 2);
+    rsgDrawMesh(gCubeMesh);
 
     return 1;
 }
