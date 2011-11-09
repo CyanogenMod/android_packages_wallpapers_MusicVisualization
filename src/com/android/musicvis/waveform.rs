@@ -61,7 +61,6 @@ static void makeIdleWave(float *points) {
     float amp2 = sin(0.023f * wave2amp) * 80;
     float amp3 = sin(0.011f * wave3amp) * 40;
     float amp4 = sin(0.031f * wave4amp) * 20;
-    // calculate how many invisible lines there are on each side
     for (int i = 0; i < 1024; i++) {
         float val = fabs(sin(0.013f * (wave1pos + i)) * amp1
                   + sin(0.029f * (wave2pos + i)) * amp2);

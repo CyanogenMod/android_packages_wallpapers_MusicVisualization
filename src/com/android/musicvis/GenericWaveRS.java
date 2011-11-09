@@ -59,10 +59,6 @@ public class GenericWaveRS extends RenderScriptScene {
     // so 8 floats per line.
     protected float [] mPointData = new float[1024*8];
 
-    private Allocation mLineIdxAlloc;
-    // 2 initial, plus one for each triangle, 2 triangles per sample
-    private short [] mIndexData = new short[2+1024*2];
-
     private ProgramVertex mPVBackground;
     private ProgramVertexFixedFunction.Constants mPVAlloc;
 
@@ -138,12 +134,8 @@ public class GenericWaveRS extends RenderScriptScene {
         // Start creating the mesh
         final Mesh.AllocationBuilder meshBuilder = new Mesh.AllocationBuilder(mRS);
         meshBuilder.addVertexAllocation(mVertexBuffer.getAllocation());
-        // Create the Allocation for the indices
-        mLineIdxAlloc = Allocation.createSized(mRS, Element.U16(mRS), mIndexData.length,
-                                               Allocation.USAGE_GRAPHICS_VERTEX |
-                                               Allocation.USAGE_SCRIPT);
         // This will be a triangle strip mesh
-        meshBuilder.addIndexSetAllocation(mLineIdxAlloc, Primitive.TRIANGLE_STRIP);
+        meshBuilder.addIndexSetType(Primitive.TRIANGLE_STRIP);
 
         // Create the Allocation for the vertices
         mCubeMesh = meshBuilder.create();
@@ -154,16 +146,8 @@ public class GenericWaveRS extends RenderScriptScene {
         mScript.set_gPointBuffer(mPointAlloc);
         mScript.set_gCubeMesh(mCubeMesh);
 
-        //  put the vertex and index data in their respective buffers
-        updateWave();
-        for(int i = 0; i < mIndexData.length; i ++) {
-            mIndexData[i] = (short) i;
-        }
-
-        //  upload the vertex and index data
+        //  upload the vertex data
         mPointAlloc.copyFromUnchecked(mPointData);
-        mLineIdxAlloc.copyFrom(mIndexData);
-        mLineIdxAlloc.syncAll(Allocation.USAGE_SCRIPT);
 
         // load the texture
         mTexture = Allocation.createFromBitmapResource(mRS, mResources, mTexId);
