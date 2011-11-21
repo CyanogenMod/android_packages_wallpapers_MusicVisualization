@@ -24,5 +24,5 @@
     <string name="vis2_desc" msgid="192540837551311681">"Vẽ làn sóng âm thanh của bất kỳ bản nhạc đang phát nào."</string>
     <string name="vis3_desc" msgid="3878566533630652215">"Hiển thị phổ tần số của bất kỳ bản nhạc đang phát nào."</string>
     <string name="vis4_desc" msgid="2752246332053894804">"Mô phỏng đồng hồ đo âm thanh dạng tương tự."</string>
-    <string name="vis5_desc" msgid="4777817231155032917">"Tất cả hình ảnh hoá nhạc với nhau, xoay chậm trong 3D."</string>
+    <string name="vis5_desc" msgid="4777817231155032917">"Tất cả hình ảnh hóa nhạc với nhau, xoay chậm trong 3D."</string>
 </resources>
