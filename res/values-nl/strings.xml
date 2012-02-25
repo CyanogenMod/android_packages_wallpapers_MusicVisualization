@@ -1,4 +1,4 @@
-<?xml version="1.0" encoding="UTF-8"?>
+<?xml version="1.0" encoding="utf-8"?>
 <!-- 
 /*
 * Copyright (C) 2008 The Android Open Source Project
@@ -22,7 +22,7 @@
     <string name="wallpapers" msgid="7646602778647576267">"Achtergronden met muziekvisualisaties"</string>
     <string name="author" msgid="6199067265817633685">"Google"</string>
     <string name="vis2_desc" msgid="192540837551311681">"Tekent de geluidsgolf van de muziektrack die momenteel wordt afgespeeld."</string>
-    <string name="vis3_desc" msgid="3878566533630652215">"Geeft het frequentiespectrum weer van de muziektrack die momenteel wordt afgespeeld."</string>
+    <string name="vis3_desc" msgid="3878566533630652215">"Toont het frequentiespectrum van de muziektrack die momenteel wordt afgespeeld."</string>
     <string name="vis4_desc" msgid="2752246332053894804">"Simulatie van een analoge geluidsmeter."</string>
     <string name="vis5_desc" msgid="4777817231155032917">"Alle muziekvisualisaties bij elkaar die langzaam in 3D ronddraaien."</string>
 </resources>
