@@ -86,9 +86,4 @@ public abstract class RenderScriptScene {
     public void setOffset(float xOffset, float yOffset, int xPixels, int yPixels) {
     }
 
-    @SuppressWarnings({"UnusedDeclaration"})
-    public Bundle onCommand(String action, int x, int y, int z, Bundle extras,
-            boolean resultRequested) {
-        return null;
-    }
 }
