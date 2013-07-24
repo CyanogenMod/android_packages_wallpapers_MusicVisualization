@@ -150,7 +150,9 @@ public class GenericWaveRS extends RenderScriptScene {
         mPointAlloc.copyFromUnchecked(mPointData);
 
         // load the texture
-        mTexture = Allocation.createFromBitmapResource(mRS, mResources, mTexId);
+        mTexture = Allocation.createFromBitmapResource(mRS, mResources, mTexId,
+                                           Allocation.MipmapControl.MIPMAP_NONE,
+                                           Allocation.USAGE_GRAPHICS_TEXTURE);
 
         mScript.set_gTlinetexture(mTexture);
 
