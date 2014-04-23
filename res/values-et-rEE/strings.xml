@@ -19,9 +19,10 @@
 
 <resources xmlns:android="http://schemas.android.com/apk/res/android"
     xmlns:xliff="urn:oasis:names:tc:xliff:document:1.2">
-    <string name="wallpaper_vis1" msgid="1638523041121667391">"مجسم کننده"</string>
-    <string name="wallpaper_vis2" msgid="4565736588102466989">"موجی شکل"</string>
-    <string name="wallpaper_vis3" msgid="3007445671726137442">"طیف"</string>
-    <string name="wallpaper_vis4" msgid="6050134144984656120">"‏VU سنج"</string>
-    <string name="wallpaper_vis5" msgid="6639280366165624426">"زیاد"</string>
+    <string name="wallpapers" msgid="7646602778647576267">"Muusika visualiseerimise taustapildid"</string>
+    <string name="author" msgid="6199067265817633685">"Google"</string>
+    <string name="vis2_desc" msgid="192540837551311681">"Joonistab praegu esitusel oleva muusikapala helilaine."</string>
+    <string name="vis3_desc" msgid="3878566533630652215">"Kuvab praegu esitusel oleva muusikapala sagedusspektri."</string>
+    <string name="vis4_desc" msgid="2752246332053894804">"Simuleerib analooghelimõõtjat"</string>
+    <string name="vis5_desc" msgid="4777817231155032917">"Kõik muusika visualiseerimised koos, pöörlevad aeglaselt 3D-s"</string>
 </resources>
