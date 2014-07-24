@@ -18,5 +18,10 @@
 */
 -->
 <resources xmlns:xliff="urn:oasis:names:tc:xliff:document:1.2">
+  <string name="wallpapers">پاشبنەماکانی شەبەنگی مۆسیقا</string>
   <string name="author">گووگڵ</string>
+  <string name="vis2_desc">شەپۆلەکانی دەنگی ئەو تراکە مۆسیقایە بخەرە ڕوو کە ئێستا لێدراوە.</string>
+  <string name="vis3_desc">شەبەنگی ڕووناکی لەرەلەر بۆ ئەو تراکە مۆسیقایە کە ئێستا لێدراوە پیشان بدە.</string>
+  <string name="vis4_desc">پیشاندان وەکوو ئامێرێکی بەراوردی پێوەری  هێزی دەنگ.</string>
+  <string name="vis5_desc">هەموو شەبەنگەکانی مۆسیقاکان پێکەوە، لە 3D بەهێواشی ئەخولێتەوە.</string>
 </resources>
