@@ -29,7 +29,7 @@
 
     <application
         android:label="@string/wallpapers"
-        android:icon="@drawable/ic_launcher_wallpaper">
+        android:icon="@mipmap/ic_launcher_wallpaper">
 
         <!-- Visualizer Wallpaper -->
         <!-- this wallpaper isn't very good, so disable it (using android:enabled=false doesn't work here for some reason)
