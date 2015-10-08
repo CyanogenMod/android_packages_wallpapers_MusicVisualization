@@ -263,7 +263,6 @@ int root(void) {
 
     rsgBindProgramVertex(gPVBackground);
 
-    int i;
     rs_matrix4x4 ident;
     int now = (int)rsUptimeMillis();
     int delta = now - lastuptime;
